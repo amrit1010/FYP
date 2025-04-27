@@ -1,0 +1,101 @@
+{% extends 'dashboard/base.html' %}
+
+{% block container %}
+<div class="vendor-messages u-s-p-t-90">
+    <div class="container">
+        <h2>Vendor Messages</h2>
+
+        <div class="messages-container">
+            <div class="message-list" id="message-list">
+                {% for message in messages %}
+                    <div class="message-item">
+                        <p><strong>From:</strong> {{ message.sender.full_name }}</p>
+                        <p><strong>Product:</strong> {{ message.product.name }}</p>
+                        <p><strong>Message:</strong> {{ message.message }}</p>
+                        <p><strong>Time:</strong> {{ message.created_at|date:"M d, Y H:i" }}</p>
+                        <a href="{% url 'dashboard:reply_message' message.id %}" class="btn btn--e-brand-b-2">Reply</a>
+                    </div>
+                {% empty %}
+                    <p id="no-messages">No messages yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .vendor-messages { background: #f5f7fa; padding-bottom: 50px; }
+    .messages-container { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); padding: 20px; max-height: 600px; overflow-y: auto; }
+    .message-item { border-bottom: 1px solid #ddd; padding: 15px 0; }
+    .message-item:last-child { border-bottom: none; }
+    .message-item p { margin: 5px 0; }
+    #no-messages { text-align: center; color: #999; font-style: italic; padding: 20px; }
+    .btn--e-brand-b-2 { background: #e8690e; color: #fff; padding: 8px 15px; border-radius: 5px; text-decoration: none; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageList = document.getElementById('message-list');
+        const userId = "{{ request.user.id }}";
+        let socket;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        const baseReconnectDelay = 3000;
+
+        function connectWebSocket() {
+            socket = new WebSocket(`ws://${window.location.host}/ws/vendor/messages/`);
+
+            socket.onopen = function() {
+                console.log('Vendor Messages WebSocket connected');
+                reconnectAttempts = 0;
+            };
+
+            socket.onmessage = function(event) {
+                console.log('Received Vendor WebSocket message:', event.data);
+                try {
+                    const data = JSON.parse(event.data);
+                    if (!data.message || !data.sender_name || !data.product_name || !data.message_id || !data.timestamp) {
+                        console.error('Invalid message format:', data);
+                        return;
+                    }
+                    const noMessages = document.getElementById('no-messages');
+                    if (noMessages) {
+                        noMessages.remove();
+                    }
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message-item';
+                    messageDiv.innerHTML = `
+                        <p><strong>From:</strong> ${data.sender_name}</p>
+                        <p><strong>Product:</strong> ${data.product_name}</p>
+                        <p><strong>Message:</strong> ${data.message}</p>
+                        <p><strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                        <a href="{% url 'dashboard:reply_message' 0 %}".replace('0', data.message_id) class="btn btn--e-brand-b-2">Reply</a>
+                    `;
+                    messageList.appendChild(messageDiv);
+                    messageList.scrollTop = messageList.scrollHeight;
+                } catch (error) {
+                    console.error('Error parsing Vendor WebSocket message:', error, 'Data:', event.data);
+                }
+            };
+
+            socket.onclose = function(event) {
+                console.warn('Vendor Messages WebSocket closed:', event.code, event.reason);
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts);
+                    console.log(`Reconnecting in ${delay}ms... Attempt ${reconnectAttempts}/${maxReconnectAttempts}`);
+                    setTimeout(connectWebSocket, delay);
+                } else {
+                    console.error('Max reconnect attempts reached.');
+                }
+            };
+
+            socket.onerror = function(error) {
+                console.error('Vendor Messages WebSocket error:', error);
+            };
+        }
+
+        connectWebSocket();
+    });
+</script>
+{% endblock container %}

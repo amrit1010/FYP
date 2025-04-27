@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+        background: #eaedf2;
+        font-family: 'Poppins', sans-serif;
+    }
+        .badge-rejected {
+            background-color: #dc3545; /* Red for rejected */
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+    .order-container {
+        background: #aab6ca;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        max-width: 1200px;
+    }
+
+    .order-title {
+        color: #f8fafc;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 2rem;
+        margin-left: 283px;
+
+    }
+
+    .order-table {
+        background: #334155;
+        border-radius: 15px;
+        overflow: hidden;
+        width: 80%;
+        max-width: 900px; 
+        margin: 0 auto;
+        align-items: center;
+        padding: 20px;
+        
+    }
+
+    .table-header {
+        background: #475569;
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    .table-row {
+        transition: all 0.2s ease;
+        color: #cbd5e1;
+    }
+
+    .table-row:hover {
+        background: #475569;
+        transform: translateY(-2px);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .badge-pending {
+        background: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+    }
+
+    .badge-shipped {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+
+    .badge-delivered {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .detail-btn {
+        background-color: #4a4e50b0;
+        border: 1px solid #d8d8d852;
+        color: #4ade80;
+        transition: all 0.3s ease;
+    }
+
+    .detail-btn:hover {
+        background: #4ade80;
+        color: #0f172a;
+    }
+
+    .empty-state {
+        background: #576270;
+        border: 2px dashed #000000;
+        border-radius: 15px;
+        padding: 3rem;
+    }
+
+    .empty-state p {
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .order-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+        
+        .table-header {
+            display: none;
+        }
+        
+        .table-row {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+        }
+        
+        .table-row td {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border: none;
+        }
+        
+        .table-row td::before {
+            content: attr(data-label);
+            color: #94a3b8;
+            font-weight: 500;
+            margin-right: 1rem;
+        }
+        
+    }
+</style>
+
+<div class="order-container">
+    <h1 class="order-title mb-4">📦 Order History</h1>
+<!-- Display messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+    {% if orders %}
+        <div class="table-responsive">
+            <table class="order-table table">
+                <thead class="table-header">
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Payment method</th>
+                        <th>Date</th>
+                        <th>Refund Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr class="table-row">
+                            <td data-label="Order No.">{{ order.id }}</td>
+                            <td data-label="Product">{{ order.product }}</td>
+                            <td data-label="Quantity">{{ order.quantity }}</td>
+                            <td data-label="Total">Rs {{ order.total_price }}</td>
+                            <td data-label="Status">
+                                <span class="status-badge 
+                                    {% if order.status == 'pending' %}badge-pending
+                                    {% elif order.status == 'shipped' %}badge-shipped
+                                    {% elif order.status == 'delivered' %}badge-delivered{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{order.payment_method}}</td>
+                            <td data-label="Date">{{ order.created_at|date:"M d, Y" }}</td>
+                            <td data-label="Refund Status">
+                                {% if order.refund_requests.exists %}
+                                    {% with refund=order.refund_requests.first %}
+                                        <span class="status-badge 
+                                            {% if refund.status == 'pending' %}badge-pending
+                                            {% elif refund.status == 'approved' %}badge-delivered
+                                            {% elif refund.status == 'rejected' %}badge-rejected{% endif %}">
+                                            {{ refund.get_status_display }}
+                                        </span>
+                                    {% endwith %}
+                                {% else %}
+                                    {% if order.status == 'delivered' %}
+                                        <a href="{% url 'shop:request_refund' order.id %}" class="btn btn-sm btn-warning">Request Refund</a>
+                                    {% else %}
+                                        <span>-</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-box-open fa-3x text-475569"></i>
+            </div>
+            <p class="mb-4">Your order list is currently empty. Let's find something special!</p>
+            <a href="{% url 'shop:home' %}" class="btn detail-btn rounded-pill px-4">
+                <i></i> 🏠Start Shopping
+            </a>
+        </div>
+    {% endif %}
+
+<!-- Bid Orders Section -->
+<h2 class="mb-3 mt-5">Your Bids</h2>
+{% if bid_orders %}
+    <div class="table-responsive">
+        <table class="bid-order-table table">
+            <thead class="table-header">
+                <tr>
+                    <th>Product</th>
+                    <th>Bid Amount</th>
+                    <th>Bid Time</th>
+                    <th>Status</th>
+                    <th>Pay</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bid in bid_orders %}
+                    <tr class="table-row">
+                        <td data-label="Product">{{ bid.auction.product.name }}</td>
+                        <td data-label="Bid Amount">Rs {{ bid.bid_amount }}</td>
+                        <td data-label="Bid Time">{{ bid.ordered_at|date:"M d, Y H:i" }}</td>
+                        <td data-label="Status">
+                            <span class="status-badge 
+                                {% if bid.status == 'pending' %}badge-pending
+                                {% elif bid.status == 'won' %}badge-delivered
+                                {% elif bid.status == 'lost' %}badge-rejected{% endif %}">
+                                {{ bid.get_status_display }}
+                            </span>
+                        </td>
+                        <td data-label="Pay">
+                            {% if bid.status == 'pending' and bid.auction.highest_bidder == request.user and not bid.auction.is_active %}
+                                <form action="{% url 'shop:pay_auction' bid.auction.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success rounded-pill">
+                                        <i class="fas fa-wallet me-1"></i> Pay Now
+                                    </button>
+                                </form>
+                            {% elif bid.status == 'paid' %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i> Paid
+                                </span>
+                            {% elif bid.status == 'processing' %}
+                                <span class="badge bg-info">
+                                    <i class="fas fa-cog me-1"></i> Processing(PAID)
+                                </span>
+                            {% elif bid.status == 'shipped' %}
+                                {# Order shipped #}
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-truck me-1"></i> Shipped(PAID)
+                                </span>
+                                {% elif bid.status == 'delivered' %}
+                                {# Order delivered #}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-box-open me-1"></i> Delivered(PAID)
+                                </span>
+                                {% elif bid.status == 'cancelled' %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i> Cancelled
+                                </span>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-state text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-hand-holding-usd fa-3x text-475569"></i>
+        </div>
+        <p class="mb-4">You haven’t placed any bids yet. Try your luck on exciting deals!</p>
+        <a href="{% url 'shop:auction_list' %}" class="btn detail-btn rounded-pill px-4">
+            🎯 Start Bidding
+        </a>
+    </div>
+{% endif %}
+
+
+   <!-- Auction History Section -->
+   <h2 class="mb-3 mt-5">Auction History</h2>
+   {% if auctions %}
+       <div class="table-responsive">
+           <table class="auction-table table">
+               <thead class="table-header">
+                   <tr>
+                       <th>Product</th>
+                       <th>Start Time</th>
+                       <th>End Time</th>
+                       <th>Your Highest Bid</th>
+                       <th>Status</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   {% for data in auctions %}
+                       <tr class="table-row">
+                           <td data-label="Product">{{ data.auction.product.name }}</td>
+                           <td data-label="Start Time">{{ data.auction.start_time|date:"M d, Y H:i" }}</td>
+                           <td data-label="End Time">{{ data.auction.end_time|date:"M d, Y H:i" }}</td>
+                           <td data-label="Your Highest Bid">Rs  {{ data.user_highest_bid }}</td>
+                           <td data-label="Status">
+                               <span class="status-badge 
+                                   {% if data.auction.is_active %}badge-active
+                                   {% else %}badge-ended{% endif %}">
+                                   {% if data.auction.is_active %}Active{% else %}Ended{% endif %}
+                               </span>
+                           </td>
+                       </tr>
+                   {% endfor %}
+               </tbody>
+           </table>
+       </div>
+   {% else %}
+       <div class="empty-state text-center py-5">
+           <div class="mb-4">
+               <i class="fas fa-gavel fa-3x text-475569"></i>
+           </div>
+           <p class="mb-4">You have not participated in any auctions yet.</p>
+           <a href="{% url 'shop:auction_list' %}" class="btn detail-btn rounded-pill px-4">
+               <i></i> 🛒View Auctions
+           </a>
+       </div>
+   {% endif %}
+</div>
+<script src="https://kit.fontawesome.com/your-kit-code.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check for payment completion parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('payment_completed')) {
+            // Force refresh to get updated status from server
+            window.location.href = "{% url 'shop:order_list' %}";
+        }
+    });
+    </script>
+{% endblock container %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<div class="u-s-p-y-90">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shop-p">
+                    <div class="shop-p__toolbar u-s-m-b-30">
+                        <div class="shop-p__meta-wrap u-s-m-b-60">
+                            <span class="shop-p__meta-text-1">FOUND {{ products|length }} RESULTSs</span>
+                        </div>
+                        <div class="shop-p__tool-style">
+                            <div class="tool-style__group u-s-m-b-8">
+                                <span class="js-shop-filter-target" data-side="#side-filter">Filters</span>
+                                <span class="js-shop-grid-target is-active">Grid</span>
+                                <span class="js-shop-list-target">List</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    {% if products %}
+                        <div class="shop-p__collection">
+                            <div class="row is-grid-active">
+                                {% for product in products %}
+                                    <div class="col-lg-3 col-md-4 col-sm-6">
+                                        <div class="product-m">
+                                            <div class="product-m__thumb">
+                                                <a class="aspect aspect--bg-grey aspect--square u-d-block" href="{% url 'shop:product_detail' product_id=product.id %}">
+                                                    {% if product.image %}
+                                                <img class="aspect__img" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                                    {% else %}
+                                                        <img class="aspect__img" src="{% static 'images/default-image.jpg' %}" alt="No Image Available">
+                                                    {% endif %}
+                                                </a>
+                                                <div class="product-m__add-cart">
+                                                    <form method="POST" action="{% url 'shop:add_to_cart' product.id %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        {% if request.user.is_authenticated %}
+                                                            <button class="btn--e-brand" type="submit">Add to Cart</button>
+                                                        {% else %}
+                                                            <a href="{% url 'core:login' %}" class="btn--e-brand">Login to Add</a>
+                                                        {% endif %}
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div class="product-m__content">
+                                                <div class="product-m__category">
+                                                    <a href="#">{{ product.category }}</a>
+                                                </div>
+                                                <div class="product-m__name">
+                                                    <a href="{% url 'shop:product_detail' product_id=product.id %}">{{ product.name|truncatechars:14 }}</a>
+                                                </div>
+                                                
+                                                <div class="product-m__price">Rs {{ product.price }}</div>
+                                                <div class="product-m__hover">
+                                                    <div class="product-m__preview-description">
+                                                        <span>{{ product.description|truncatewords:20 }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>No products available in this category.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

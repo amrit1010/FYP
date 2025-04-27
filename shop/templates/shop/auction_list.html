@@ -1,0 +1,593 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<style>
+    /* Reset and Base Styles */
+    :root {
+        --primary-color: #e64a19;
+        --primary-dark: #d84315;
+        --text-color: #333333;
+        --text-light: #757575;
+        --background-color: #ffffff;
+        --border-color: #e0e0e0;
+        --warning-color: #ff9800;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    section {
+        padding: 60px 0;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+
+    .btn-large {
+        padding: 12px 24px;
+        font-size: 1.1rem;
+    }
+
+    .btn-disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
+    /* Hero Section */
+    .hero {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+    }
+
+    .slider-container {
+        width: 1200px; /* Fixed width */
+        height: 500px; /* Fixed height */
+        position: relative;
+        margin: 0 auto; /* Center the slider */
+    }
+
+    .slider {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .slide.active {
+        opacity: 1;
+        z-index: 1;
+    }
+
+    .slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensure proper image display */
+        object-position: center;
+    }
+
+    .slide::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+    }
+
+    .slide-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+
+    .slide h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .slide p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+
+    /* Slider Controls */
+    .slider-controls {
+        position: absolute;
+        bottom: 30px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+    }
+
+    .prev-slide,
+    .next-slide {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin: 0 15px;
+    }
+
+    .prev-slide:hover,
+    .next-slide:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .prev-slide svg,
+    .next-slide svg {
+        stroke: white;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .slider-dots {
+        display: flex;
+        gap: 10px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .dot.active {
+        background: white;
+    }
+
+    /* Featured Section */
+    .auction-items {
+        display: grid;
+        gap: 30px;
+        transition: var(--transition);
+    }
+
+    .auction-items.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+
+    .auction-item {
+        background-color: var(--background-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+    }
+
+    .auction-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .auction-img {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+
+    .auction-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .auction-item:hover .auction-img img {
+        transform: scale(1.05);
+    }
+
+    .auction-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .auction-info {
+        padding: 20px;
+    }
+
+    .auction-info h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .description {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .bid-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding: 10px 0;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .current-bid,
+    .time-left,
+    .highest-bidder {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .current-bid span,
+    .time-left span,
+    .highest-bidder span {
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+
+    .current-bid strong,
+    .time-left strong,
+    .highest-bidder strong {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .time-left strong {
+        color: var(--warning-color);
+    }
+
+    .bid-btn {
+        width: 100%;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .hero, .slider-container {
+            height: 400px;
+        }
+
+        .slide h1 {
+            font-size: 2rem;
+        }
+
+        .slide p {
+            font-size: 1rem;
+        }
+
+        .slider-container {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero, .slider-container {
+            height: 350px;
+        }
+
+        .slide h1 {
+            font-size: 1.5rem;
+        }
+
+        .prev-slide,
+        .next-slide {
+            width: 30px;
+            height: 30px;
+        }
+    }
+</style>
+
+<section class="hero">
+    <div class="slider-container">
+        <div class="slider">
+            {% for auction in auctions|slice:":3" %}
+            <div class="slide {% if forloop.first %}active{% endif %}">
+                {% if auction.product.image %}
+                    <img src="{{ auction.product.image.url }}" alt="{{ auction.product.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/1200x500" alt="No Image">
+                {% endif %}
+                <div class="slide-content">
+                    <h1>{{ auction.product.name }}</h1>
+                    <p>
+                        {% if auction_type == 'live' %}
+                            Current Bid: Rs {{ auction.highest_bid|default:auction.starting_bid }}
+                        {% elif auction_type == 'upcoming' %}
+                            Starting Bid: Rs {{ auction.starting_bid }} - Starts {{ auction.start_time|date:"M d, Y" }}
+                        {% else %}
+                            Final Bid: Rs {{ auction.highest_bid|default:auction.starting_bid }} - Won by {{ auction.highest_bidder.full_name|default:'No Winner' }}
+                        {% endif %}
+                    </p>
+                    {% if auction_type == 'live' %}
+                        <a href="{% url 'shop:auction_detail' auction.id %}" class="btn btn-primary btn-large">Bid Now</a>
+                    {% elif auction_type == 'upcoming' %}
+                        <button class="btn btn-primary btn-large btn-disabled" disabled>Not Started</button>
+                    {% else %}
+                        <button class="btn btn-primary btn-large btn-disabled" disabled>Auction Ended</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="slide active">
+                <img src="https://via.placeholder.com/1200x500" alt="No Auctions">
+                <div class="slide-content">
+                    <h1>No {% if auction_type == 'live' %}Live{% elif auction_type == 'upcoming' %}Upcoming{% else %}Past{% endif %} Auctions</h1>
+                    <p>Check back later for new auctions!</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Slider Controls -->
+        {% if auctions|length > 1 %}
+        <div class="slider-controls">
+            <button class="prev-slide" aria-label="Previous slide">
+                <svg viewBox="0 0 24 24" width="24" height="24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="slider-dots">
+                {% for auction in auctions|slice:":3" %}
+                <span class="dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.counter0 }}"></span>
+                {% endfor %}
+            </div>
+            <button class="next-slide" aria-label="Next slide">
+                <svg viewBox="0 0 24 24" width="24" height="24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="featured">
+    <div class="container">
+        <div class="section-header">
+            <h2>
+                {% if auction_type == 'live' %}Live Auctions
+                {% elif auction_type == 'upcoming' %}Upcoming Auctions
+                {% else %}Past Auctions{% endif %}
+            </h2>
+        </div>
+        <div class="auction-items grid-view" id="auction-items">
+            {% for auction in auctions %}
+            <div class="auction-item">
+                <div class="auction-img">
+                    {% if auction.product.image %}
+                        <img src="{{ auction.product.image.url }}" alt="{{ auction.product.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300x200" alt="No Image">
+                    {% endif %}
+                    {% if auction_type == 'live' %}
+                        <div class="auction-badge">Live</div>
+                    {% elif auction_type == 'upcoming' %}
+                        <div class="auction-badge">Upcoming</div>
+                    {% else %}
+                        <div class="auction-badge">Ended</div>
+                    {% endif %}
+                </div>
+                <div class="auction-info">
+                    <h3>{{ auction.product.name }}</h3>
+                    <p class="description">{{ auction.product.description|default:'No description available' }}</p>
+                    <div class="bid-info">
+                        <div class="current-bid">
+                            <span>
+                                {% if auction_type == 'live' %}Current Bid
+                                {% elif auction_type == 'upcoming' %}Starting Bid
+                                {% else %}Final Bid{% endif %}
+                            </span>
+                            <strong>Rs {{ auction.highest_bid|default:auction.starting_bid }}</strong>
+                        </div>
+                        <div class="time-left" data-ends="{{ auction.end_time.isoformat }}">
+                            <span>
+                                {% if auction_type == 'live' %}Ends in
+                                {% elif auction_type == 'upcoming' %}Starts in
+                                {% else %}Ended{% endif %}
+                            </span>
+                            <strong class="countdown">
+                                {% if auction_type == 'upcoming' %}
+                                    {{ auction.start_time|date:"M d, Y" }}
+                                {% elif auction_type == 'past' %}
+                                    {{ auction.end_time|date:"M d, Y" }}
+                                {% else %}
+                                    <!-- Countdown will be updated by JS -->
+                                {% endif %}
+                            </strong>
+                        </div>
+                    </div>
+                    {% if auction_type == 'live' %}
+                    <div class="bid-info">
+                        <div class="highest-bidder">
+                            <span>Highest Bidder</span>
+                            <strong>{{ auction.highest_bidder.full_name|default:'None' }}</strong>
+                        </div>
+                    </div>
+                    {% elif auction_type == 'past' %}
+                    <div class="bid-info">
+                        <div class="highest-bidder">
+                            <span>Winner</span>
+                            <strong>{{ auction.highest_bidder.full_name|default:'No Winner' }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if auction_type == 'live' %}
+                        <a href="{% url 'shop:auction_detail' auction.id %}" class="btn btn-primary bid-btn">Place Bid</a>
+                    {% elif auction_type == 'upcoming' %}
+                        <button class="btn btn-primary bid-btn btn-disabled" disabled>Not Started</button>
+                    {% else %}
+                        <button class="btn btn-primary bid-btn btn-disabled" disabled>Auction Ended</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="auction-item">
+                <div class="auction-info">
+                    <h3>No Auctions Available</h3>
+                    <p class="description">There are no {% if auction_type == 'live' %}live{% elif auction_type == 'upcoming' %}upcoming{% else %}past{% endif %} auctions at the moment.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Slider functionality
+        const slides = document.querySelectorAll(".slide");
+        const dots = document.querySelectorAll(".dot");
+        const prevBtn = document.querySelector(".prev-slide");
+        const nextBtn = document.querySelector(".next-slide");
+        let currentSlide = 0;
+        let slideInterval;
+
+        function showSlide(index) {
+            slides.forEach((slide) => slide.classList.remove("active"));
+            dots.forEach((dot) => dot.classList.remove("active"));
+            slides[index].classList.add("active");
+            dots[index].classList.add("active");
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            let next = currentSlide + 1;
+            if (next >= slides.length) next = 0;
+            showSlide(next);
+        }
+
+        function prevSlide() {
+            let prev = currentSlide - 1;
+            if (prev < 0) prev = slides.length - 1;
+            showSlide(prev);
+        }
+
+        function startSlideshow() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function stopSlideshow() {
+            clearInterval(slideInterval);
+        }
+
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener("click", () => {
+                prevSlide();
+                stopSlideshow();
+                startSlideshow();
+            });
+
+            nextBtn.addEventListener("click", () => {
+                nextSlide();
+                stopSlideshow();
+                startSlideshow();
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener("click", () => {
+                    showSlide(index);
+                    stopSlideshow();
+                    startSlideshow();
+                });
+            });
+
+            startSlideshow();
+
+            const sliderContainer = document.querySelector(".slider-container");
+            sliderContainer.addEventListener("mouseenter", stopSlideshow);
+            sliderContainer.addEventListener("mouseleave", startSlideshow);
+        }
+
+        // Countdown timer functionality (for live auctions only)
+        {% if auction_type == 'live' %}
+        function updateCountdowns() {
+            const countdownElements = document.querySelectorAll(".time-left");
+
+            countdownElements.forEach((element) => {
+                const endTime = new Date(element.dataset.ends).getTime();
+                const now = new Date().getTime();
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    element.querySelector(".countdown").textContent = "Auction ended";
+                    return;
+                }
+
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
+                element.querySelector(".countdown").textContent = `${days}d ${hours}h ${minutes}m`;
+            });
+        }
+
+        updateCountdowns();
+        setInterval(updateCountdowns, 60000);
+        {% endif %}
+    });
+</script>
+{% endblock container %}

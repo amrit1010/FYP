@@ -1,0 +1,41 @@
+<!-- templates/admin/user_engagement_report.html -->
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h1>User Engagement Report</h1>
+    <h2>Top 10 Active Buyers</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User Email</th>
+                <th>Total Orders</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for buyer in active_buyers %}
+                <tr>
+                    <td>{{ buyer.user__email }}</td>
+                    <td>{{ buyer.total_orders }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Top 10 Active Sellers</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Vendor Email</th>
+                <th>Total Products</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for seller in active_sellers %}
+                <tr>
+                    <td>{{ seller.vendor__email }}</td>
+                    <td>{{ seller.total_products }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

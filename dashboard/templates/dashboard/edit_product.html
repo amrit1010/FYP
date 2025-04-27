@@ -1,0 +1,291 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block container %}
+<div class="container-fluid">
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <h4 class="theme-item">Edit Product - {{ vendor.full_name }}</h4>
+        </div>
+        <div class="col-md-6">
+            <ol class="breadcrumb float-end">
+                <p class="text-secondary">Product Type: <span class="theme-item">{{ product_type|title }}</span></p>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="id_name" class="form-label">Product Name<span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="id_name" 
+                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                   value="{{ form.name.value|default:'' }}"
+                                   placeholder="Enter product name" required>
+                            {% for error in form.name.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_sku" class="form-label">SKU</label>
+                            <input type="text" name="sku" id="id_sku" 
+                                   class="form-control {% if form.sku.errors %}is-invalid{% endif %}"
+                                   value="{{ form.sku.value|default:'' }}"
+                                   placeholder="Enter SKU number">
+                            {% for error in form.sku.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing & Stock Section -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="id_price" class="form-label">Price<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="price" id="id_price" 
+                                       class="form-control {% if form.price.errors %}is-invalid{% endif %}"
+                                       value="{{ form.price.value|default:'' }}"
+                                       step="0.01" min="0" required>
+                            </div>
+                            {% for error in form.price.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="id_discount" class="form-label">Discount</label>
+                            <div class="input-group">
+                                <input type="number" name="discount" id="id_discount" 
+                                       class="form-control {% if form.discount.errors %}is-invalid{% endif %}"
+                                       value="{{ form.discount.value|default:'' }}"
+                                       min="0" max="100" placeholder="0-100%">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            {% for error in form.discount.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="id_stock" class="form-label">Stock<span class="text-danger">*</span></label>
+                            <input type="number" name="stock" id="id_stock" 
+                                   class="form-control {% if form.stock.errors %}is-invalid{% endif %}"
+                                   value="{{ form.stock.value|default:'' }}"
+                                   min="0" required>
+                            {% for error in form.stock.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="id_size" class="form-label">Size/Dimensions</label>
+                            <input type="text" name="size" id="id_size" 
+                                   class="form-control {% if form.size.errors %}is-invalid{% endif %}"
+                                   value="{{ form.size.value|default:'' }}"
+                                   placeholder="e.g., 10x5x3 in">
+                            {% for error in form.size.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Auction-Specific Fields (Shown only for auction) -->
+                {% if product_type == 'auction' %}
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_start_time" class="form-label">Start Time<span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="start_time" id="id_start_time" 
+                                   class="form-control {% if form.start_time.errors %}is-invalid{% endif %}"
+                                   value="{{ form.start_time.value|default:''|date:'Y-m-d\\TH:i' }}"
+                                   required>
+                            {% for error in form.start_time.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_end_time" class="form-label">End Time<span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="end_time" id="id_end_time" 
+                                   class="form-control {% if form.end_time.errors %}is-invalid{% endif %}"
+                                   value="{{ form.end_time.value|default:''|date:'Y-m-d\\TH:i' }}"
+                                   required>
+                            {% for error in form.end_time.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_starting_bid" class="form-label">Starting Bid<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="starting_bid" id="id_starting_bid" 
+                                       class="form-control {% if form.starting_bid.errors %}is-invalid{% endif %}"
+                                       value="{{ form.starting_bid.value|default:'0.00' }}"
+                                       step="0.01" min="0" required>
+                            </div>
+                            {% for error in form.starting_bid.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                
+                <!-- Descriptions Section -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="id_description" class="form-label">Description<span class="text-danger">*</span></label>
+                            <textarea name="description" id="id_description" 
+                                      class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                      rows="3" required>{{ form.description.value|default:'' }}</textarea>
+                            {% for error in form.description.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="id_additional_information" class="form-label">Additional Info</label>
+                            <textarea name="additional_information" id="id_additional_information" 
+                                    class="form-control {% if form.additional_information.errors %}is-invalid{% endif %}"
+                                    rows="2">{{ form.additional_information.value|default:'' }}</textarea>
+                            {% for error in form.additional_information.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="id_features" class="form-label">Key Features</label>
+                            <div class="form-check">
+                                <input type="checkbox" name="features" id="id_features" 
+                                       class="form-check-input {% if form.features.errors %}is-invalid{% endif %}"
+                                       {% if form.features.value %}checked{% endif %}>
+                                <label class="form-check-label" for="id_features"> Select if this product has key features</label>
+                            </div>
+                            {% for error in form.features.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Category & Brand Section -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="id_categories" class="form-label">Categories</label>
+                            <select name="categories" id="id_categories" 
+                                    class="form-select {% if form.categories.errors %}is-invalid{% endif %}">
+                                {% for value, text in form.categories.field.choices %}
+                                    <option value="{{ value }}" {% if value == form.categories.value %}selected{% endif %}>{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for error in form.categories.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="id_brand" class="form-label">Brand</label>
+                            <select name="brand" id="id_brand" 
+                                   class="form-select {% if form.brand.errors %}is-invalid{% endif %}">
+                                {% for value, text in form.brand.field.choices %}
+                                    <option value="{{ value }}" {% if value == form.brand.value %}selected{% endif %}>{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for error in form.brand.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="id_product_type" class="form-label">Product Type</label>
+                            <select name="product_type" id="id_product_type" 
+                                   class="form-select {% if form.product_type.errors %}is-invalid{% endif %}">
+                                <option value="">-- Select Type --</option>
+                                {% for value, text in form.product_type.field.choices %}
+                                    <option value="{{ value }}" {% if value == form.product_type.value %}selected{% endif %}>{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for error in form.product_type.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image & Availability -->
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="id_image" class="form-label">Product Image</label>
+                            <input type="file" name="image" id="id_image" 
+                                  class="form-control {% if form.image.errors %}is-invalid{% endif %}"
+                                  accept="image/*">
+                            {% for error in form.image.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="id_available" class="form-label">Available</label>
+                            <div class="form-check">
+                                <input type="checkbox" name="available" id="id_available" 
+                                       class="form-check-input {% if form.available.errors %}is-invalid{% endif %}"
+                                       {% if form.available.value %}checked{% endif %}>
+                                <label class="form-check-label" for="id_available">Available for sale</label>
+                            </div>
+                            {% for error in form.available.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Submission -->
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{% url 'dashboard:vendor_products'%}?type={{ product_type }}"  class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

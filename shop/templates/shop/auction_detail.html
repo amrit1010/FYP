@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+
+<head>
+
+    <title>Auction - {{ product.name }}</title>
+
+    <style>
+        :root {
+            --primary-blue: #007bff;
+            --dark-blue: #0056b3;
+            --light-blue: #e7f1ff;
+            --blue-gradient: linear-gradient(135deg, #007bff, #00b4db);
+            --accent-blue: #00b4db;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .auction-container {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 23px;
+        }
+
+        .auction-image {
+            border-radius: 15px;
+            max-height: 450px;
+            object-fit: cover;
+            border: 4px solid var(--primary-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .auction-image:hover {
+            transform: scale(1.02);
+        }
+
+        .auction-title {
+            color: var(--dark-blue);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: var(--light-blue);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            color: var(--dark-blue);
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        .bid-form {
+            background: var(--light-blue);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-bid {
+            background: var(--blue-gradient);
+            border: none;
+            padding: 12px 25px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-bid:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+        }
+
+        .bid-history {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 2rem;
+        }
+
+        .bid-item {
+            border-bottom: 1px solid var(--light-blue);
+            padding: 0.75rem 0;
+        }
+
+        .bid-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert {
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container auction-container">
+    <div class="row">
+        <!-- Auction Image -->
+        <div class="col-md-6">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="auction-image w-100" alt="{{ product.name }}">
+            {% else %}
+                <img src="https://via.placeholder.com/450" class="auction-image w-100" alt="No Image">
+            {% endif %}
+        </div>
+
+        <!-- Auction Details -->
+        <div class="col-md-6">
+            <h2 class="auction-title">{{ product.name }}</h2>
+            
+            <div class="info-box">
+                <p><span class="info-label">Description:</span> <span class="info-value">{{ product.description|default:'N/A' }}</span></p>
+                <p><span class="info-label">Additional Info:</span> <span class="info-value">{{ product.additional_information|default:'N/A' }}</span></p>
+            </div>
+
+            <div class="info-box">
+                <p><span class="info-label">Starting Bid:</span> <span class="info-value">${{ auction.starting_bid }}</span></p>
+                <p><span class="info-label">Current Bid:</span> <span class="info-value">${{ auction.highest_bid|default:auction.starting_bid }}</span></p>
+                <p><span class="info-label">Highest Bidder:</span> <span class="info-value">{{ auction.highest_bidder.full_name|default:'None' }}</span></p>
+                <p><span class="info-label">Time Left:</span> <span class="info-value">{{ auction.time_left }}</span></p>
+            </div>
+
+            <!-- Bidding Form -->
+            {% if user.is_authenticated %}
+            <div class="bid-form">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group mb-3">
+                        <label for="id_amount" class="info-label">Your Bid (Rs)</label>
+                        {{ form.amount }}
+                        {% for error in form.amount.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% if can_bid %}
+                    <button type="submit" class="btn btn-bid w-100">Place Bid</button>
+                {% else %}
+                    <button type="button" class="btn btn-bid w-100 disabled" disabled title="You must be KYC verified to bid">Place Bid</button>
+                {% endif %}
+                </form>
+                {% if not can_bid %}
+                    <p class="text-warning mt-2">You are not KYC verified to bid.</p>
+                {% endif %}
+            </div>
+            {% else %}
+            <p class="mt-3"><a href="{% url 'login' %}" class="text-primary">Log in</a> to place a bid.</p>
+            {% endif %}
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}danger{% else %}info{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Bids -->
+    <div class="bid-history">
+        <h3 class="text-dark mb-3">Recent Bids</h3>
+        {% if bids %}
+        <div class="list-group">
+            {% for bid in bids %}
+            <div class="bid-item d-flex justify-content-between align-items-center">
+                <span>${{ bid.amount }} by {{ bid.bidder.full_name }}</span>
+                <span class="text-muted">{{ bid.created_at|date:"Y-m-d H:i" }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No bids yet.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+
+{% endblock container %}

@@ -1,0 +1,67 @@
+<!-- templates/admin/shop/auctionperformance/change_list.html -->
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <!-- Include Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Auction Performance Report</h1>
+
+    <!-- Bar Chart for Total Bids per Auction -->
+    <h2>Total Bids per Auction</h2>
+    <div id="bidsChart" style="width: 100%; height: 500px;"></div>
+
+    <!-- Table for Auction Performance Data -->
+    <h2>Auction Performance Data</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Auction ID</th>
+                <th>Product Name</th>
+                <th>Total Bids</th>
+                <th>Highest Bid</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for auction in auction_performance %}
+                <tr>
+                    <td>{{ auction.id }}</td>
+                    <td>{{ auction.product__name }}</td>
+                    <td>{{ auction.total_bids }}</td>
+                    <td>{{ auction.max_bid }}</td>  <!-- Updated to use 'max_bid' -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Total Auctions: {{ total_auctions }}</h2>
+    <h2>Total Bids: {{ total_bids }}</h2>
+
+    <!-- JavaScript to Render the Bar Chart -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data for Total Bids per Auction (Bar Chart)
+            const bidsData = [{
+                x: [{% for auction in auction_performance %}"{{ auction.product__name }}",{% endfor %}],
+                y: [{% for auction in auction_performance %}{{ auction.total_bids }},{% endfor %}],
+                type: 'bar',
+                marker: {
+                    color: 'rgba(255, 99, 132, 0.6)',
+                    line: {
+                        color: 'rgba(255, 99, 132, 1)',
+                        width: 1
+                    }
+                }
+            }];
+            const bidsLayout = {
+                title: 'Total Bids per Auction',
+                xaxis: { title: 'Product Name' },
+                yaxis: { title: 'Total Bids' }
+            };
+            Plotly.newPlot('bidsChart', bidsData, bidsLayout);
+        });
+    </script>
+{% endblock %}

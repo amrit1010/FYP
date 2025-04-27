@@ -1,0 +1,36 @@
+<!-- Upcoming Auctions Grid -->
+<section class="container py-5">
+    <h2 class="text-center mb-5 display-6 fw-bold text-dark"> Upcoming Auctions</h2>
+    
+    {% if upcoming_auctions %}
+    <div class="row g-4">
+        {% for auction in upcoming_auctions %}
+        <div class="col-lg-4 col-md-6">
+            <div class="auction-card h-100 shadow-sm">
+                {% if auction.product.image %}
+                    <img src="{{ auction.product.image.url }}" class="auction-image w-100" alt="{{ auction.product.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/400x280" class="auction-image w-100" alt="No Image">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">{{ auction.product.name }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Starting Bid</span>
+                        <span class="fw-bold">Rs {{ auction.starting_bid }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Starts On</span>
+                        <span class="fw-bold">{{ auction.start_time|date:"d M, Y h:i A" }}</span>
+                    </div>
+                    <p class="text-muted mb-3">Get ready to bid!</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center">
+        <p class="lead">No upcoming auctions available.</p>
+    </div>
+    {% endif %}
+</section>

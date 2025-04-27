@@ -1,0 +1,222 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block container %}
+<br><br>
+<div id="bodywrapper" class="container-fluid showhidetoggle">
+    <div class="content">
+        <div class="container-fluid">
+            <!-- Cards Section -->
+            <div class="row">
+                <!-- Total Products Card -->
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Products</h5>
+                            <p class="card-text display-4">{{ total_products }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction Products Card -->
+                <div class="col-md-3">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Auction Products</h5>
+                            <p class="card-text display-4">{{ auction_products }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Revenue Card -->
+                <div class="col-md-3">
+                    <div class="card bg-info text-white mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Revenue</h5>
+                            <p class="card-text display-4">${{ total_revenue }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Sales Card -->
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Sales</h5>
+                            <p class="card-text display-4">{{ total_sales }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mt-4">
+                <!-- Sales Trends Chart -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Sales Trends</h5>
+                            <p class="text-light">Daily sales data</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="canvas-wrapper">
+                                <canvas id="salesTrendsChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction Performance Chart -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Auction Performance</h5>
+                            <p class="text-light">Bids per product</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="canvas-wrapper">
+                                <canvas id="auctionPerformanceChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Buyers Chart -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Active Buyers</h5>
+                            <p class="text-light">Orders per user</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="canvas-wrapper">
+                                <canvas id="activeBuyersChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Chart Scripts -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Parse JSON data
+        const salesTrendsData = JSON.parse('{{ sales_trends|safe }}');
+        const auctionPerformanceData = JSON.parse('{{ auction_performance|safe }}');
+        const activeBuyersData = JSON.parse('{{ active_buyers|safe }}');
+
+        // Debugging: Log the parsed data to the console
+        console.log("Parsed Sales Trends Data:", salesTrendsData);
+        console.log("Parsed Auction Performance Data:", auctionPerformanceData);
+        console.log("Parsed Active Buyers Data:", activeBuyersData);
+
+        // Check if the data is valid
+        if (!salesTrendsData || !auctionPerformanceData || !activeBuyersData) {
+            console.error("One or more datasets are empty or undefined.");
+            return;
+        }
+
+        // Sales Trends Chart (Bar Graph)
+        const salesTrendsChart = new Chart(document.getElementById('salesTrendsChart'), {
+            type: 'bar',
+            data: {
+                labels: salesTrendsData.map(item => item.date),
+                datasets: [{
+                    label: 'Total Sales',
+                    data: salesTrendsData.map(item => item.total_sales),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Sales Trends Over Time'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Auction Performance Chart (Bar Graph)
+        const auctionPerformanceChart = new Chart(document.getElementById('auctionPerformanceChart'), {
+            type: 'bar',
+            data: {
+                labels: auctionPerformanceData.map(item => item.product__name),
+                datasets: [{
+                    label: 'Total Bids',
+                    data: auctionPerformanceData.map(item => item.total_bids),
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Auction Performance'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Active Buyers Chart (Bar Graph)
+        const activeBuyersChart = new Chart(document.getElementById('activeBuyersChart'), {
+            type: 'bar',
+            data: {
+                labels: activeBuyersData.map(item => item.user__email),
+                datasets: [{
+                    label: 'Total Orders',
+                    data: activeBuyersData.map(item => item.total_orders),
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Active Buyers'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+
+{% endblock container %}

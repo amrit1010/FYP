@@ -1,0 +1,61 @@
+<!-- templates/admin/core/salesreport/change_list.html -->
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <!-- Include Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Sales Report</h1>
+    <h2>Sales Trends (Last 7 Days)</h2>
+
+    <!-- Bar Graph Container -->
+    <div id="salesChart" style="width: 100%; height: 500px;"></div>
+
+    <!-- Table for Sales Data -->
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Total Sales</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trend in sales_trends %}
+                <tr>
+                    <td>{{ trend.date }}</td>
+                    <td>{{ trend.total_sales }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Total Revenue: {{ total_revenue }}</h2>
+    <h2>Total Sales: {{ total_sales }}</h2>
+
+    <!-- JavaScript to Render the Bar Graph -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const data = [{
+                x: [{% for trend in sales_trends %}"{{ trend.date }}",{% endfor %}],
+                y: [{% for trend in sales_trends %}{{ trend.total_sales }},{% endfor %}],
+                type: 'bar',
+                marker: {
+                    color: 'rgba(54, 162, 235, 0.6)',
+                    line: {
+                        color: 'rgba(54, 162, 235, 1)',
+                        width: 1
+                    }
+                }
+            }];
+            const layout = {
+                title: 'Sales Trends (Last 7 Days)',
+                xaxis: { title: 'Date' },
+                yaxis: { title: 'Total Sales' }
+            };
+            Plotly.newPlot('salesChart', data, layout);
+        });
+    </script>
+{% endblock %}

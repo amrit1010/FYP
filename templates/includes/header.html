@@ -1,0 +1,227 @@
+{% load static %}
+<!--====== Main Header ======-->
+<header class="header--style-1">
+
+    <!--====== Nav 1 ======-->
+    <nav class="primary-nav primary-nav-wrapper--border">
+        <div class="container">
+
+            <!--====== Primary Nav ======-->
+            <div class="primary-nav">
+
+                <!--====== Main Logo ======-->
+
+                <a class="main-logo" href="{% url 'shop:home' %}">
+
+
+                    <img src="{% static 'images/logo/ramsas.png' %}" alt="Logo" class="img-fluid" style="max-width: 150px; height: auto;">
+                </a>
+                <!--====== End - Main Logo ======-->
+
+
+                <!--====== Search Form ======-->
+                <form class="main-form" method="POST" action="{% url 'shop:search' %}">
+                    {% csrf_token %}
+                    <label for="main-search"></label>
+
+                    <input class="input-text input-text--border-radius input-text--style-1" 
+                                type="text" 
+                                id="main-search" 
+                                name="query" 
+                                placeholder="Search" 
+                                value="{{ query|default:'' }}">
+                            {% if category_id %}
+                                <input type="hidden" name="category_id" value="{{ category_id }}">
+                            {% elif category %}
+                                <input type="hidden" name="category_id" value="{{ category.id }}">
+                            {% endif %}
+                            <button class="btn btn--icon fas fa-search main-search-button" type="submit"></button>
+                        </form>
+                <!--====== End - Search Form ======-->
+
+
+                <!--====== Dropdown Main plugin ======-->
+                <div class="menu-init" id="navigation">
+
+                    <button class="btn btn--icon toggle-button toggle-button--secondary fas fa-cogs" type="button"></button>
+
+                    <!--====== Menu ======-->
+                    <div class="ah-lg-mode">
+
+                        <span class="ah-close">✕ Close</span>
+
+
+
+                        <!--====== List ======-->
+                        <ul class="ah-list ah-list--design1 ah-list--link-color-secondary">
+                            {% if user.is_authenticated %}
+                            <span>Welcome, {{ user.full_name }}!</span>
+                        {% else %}
+                            <span>Welcome, Guest!</span>
+                        {% endif %}
+                            <li class="has-dropdown" data-tooltip="tooltip" data-placement="left" title="Account">
+
+                                <a><i class="far fa-user-circle"></i></a>
+
+                                <!--====== Dropdown ======-->
+
+                                <span class="js-menu-toggle"></span>
+
+                                <ul style="width:120px">
+                                    {% if user.is_authenticated %}
+                                    <li>
+
+                                        <a href="{% url 'customer:profile' %}"><i class="fas fa-user-circle u-s-m-r-6"></i>
+
+                                            <span>Account</span></a></li>
+                                            <li>
+
+                                                <a href="{% url 'core:logout' %}"><i class="fas fa-lock-open u-s-m-r-6"></i>
+        
+                                                    <span>Logout</span></a></li>
+                                        {% else %}
+
+                                    <li>
+
+                                        <a href="{% url 'core:register' %}"><i class="fas fa-user-plus u-s-m-r-6"></i>
+
+                                            <span>Signup</span></a></li>
+                                    <li>
+
+                                        <a href="{% url 'core:login' %}"><i class="fas fa-lock u-s-m-r-6"></i>
+
+                                            <span>Signin</span></a></li>
+                                            {% endif %}
+                                </ul>
+                                <!--====== End - Dropdown ======-->
+                            </li>
+                            {% if user.is_authenticated and user.role == 'vendor' %}
+                            <li data-tooltip="tooltip" data-placement="left" title="Dashboard">
+                                <a href="{% url 'dashboard:vendor_dashboard' %}"><i class="fas fa-store"></i></a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                        <!--====== End - List ======-->
+                    </div>
+                    <!--====== End - Menu ======-->
+                </div>
+                <!--====== End - Dropdown Main plugin ======-->
+            </div>
+            <!--====== End - Primary Nav ======-->
+        </div>
+    </nav>
+    <!--====== End - Nav 1 ======-->
+
+
+    <!--====== Nav 2 ======-->
+    <nav class="secondary-nav-wrapper">
+        <div class="container">
+
+            <!--====== Secondary Nav ======-->
+            <div class="secondary-nav">
+
+                
+
+
+ <!--====== Dropdown Main plugin ======-->
+<div class="menu-init" id="navigation2">
+    <button class="btn btn--icon toggle-button toggle-button--secondary fas fa-cog" type="button"></button>
+
+    <!--====== Menu ======-->
+    <div class="ah-lg-mode">
+        <!--====== List ======-->
+        <ul class="ah-list ah-list--design2 ah-list--link-color-secondary">
+            <li>
+                <a href="{% url 'shop:home' %}">HOME</a>
+            </li>
+            <li class="has-dropdown">
+                <a>CATEGORY<i class="fas fa-angle-down u-s-m-l-6"></i></a>
+                <!--====== Dropdown ======-->
+                <span class="js-menu-toggle"></span>
+                <ul style="width:200px">
+                    {% for category in categories %}
+                    <li>
+                        <a href="{% url 'shop:category_products' category_id=category.id %}">{{ category.name }}</a>
+                    </li>
+                    {% empty %}
+                    <li><a href="#">No Categories Available</a></li>
+                    {% endfor %}
+                    
+                </ul>
+                <!--====== End - Dropdown ======-->
+            </li>
+            <li class="has-dropdown">
+                <a>AUCTION ITEMS<i class="fas fa-angle-down u-s-m-l-6"></i></a>
+                <!--====== Dropdown ======-->
+                <span class="js-menu-toggle"></span>
+                <ul style="width:200px">
+                    <li>
+                        <a href="{% url 'shop:auction_list' %}">Live Auctions</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'shop:auction_upcoming' %}">Upcoming Auctions</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'shop:auction_past' %}">Past Auctions</a>
+                    </li>
+                </ul>
+                <!--====== End - Dropdown ======-->
+            </li>
+            <li>
+                <a href="{% url 'shop:contact' %}">CONTACT</a>
+            </li>
+            <li>
+                <a href="{% url 'shop:about' %}">ABOUT US</a>
+            </li>
+        </ul>
+        <!--====== End - List ======-->
+    </div>
+    <!--====== End - Menu ======-->
+</div>
+<!--====== End - Dropdown Main plugin ======-->
+
+
+<div class="menu-init" id="navigation3">
+    <button class="btn btn--icon toggle-button toggle-button--secondary fas fa-shopping-bag toggle-button-shop" type="button"></button>
+
+    <!--====== Menu ======-->
+    <div class="ah-lg-mode">
+        <span class="ah-close">✕ Close</span>
+
+        <!--====== List ======-->
+        <ul class="ah-list ah-list--design2 ah-list--link-color-secondary">
+            {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'shop:order_list' %}"><i class="fas fa-clipboard-list u-s-m-r-6"></i>MY ORDERS
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'shop:cart' %}">
+                    <i class="fas fa-shopping-cart u-s-m-r-6"></i>MY CART
+                    <span id="cart-count" class="badge" style="background-color: #ff6200; color: #fff; padding: 5px; border-radius: 5px;">
+                        {% if cart_count %}{{ cart_count }}{% else %}0{% endif %}
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'shop:notifications' %}">
+                    <i class="fas fa-bell u-s-m-r-6"></i>NOTIFICATIONS
+                    {% if user.is_authenticated and unread_notification_count > 0 %}
+                    <span class="badge" style="background-color: #ff6200; color: #fff; padding: 5px; border-radius: 5px;">{{ unread_notification_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <!--====== End - List ======-->
+    </div>
+    <!--====== End - Menu ======-->
+</div>
+<!--====== End - Dropdown Main plugin ======-->
+            </div>
+            <!--====== End - Secondary Nav ======-->
+        </div>
+    </nav>
+    <!--====== End - Nav 2 ======-->
+</header>
+<!--====== End - Main Header ======-->

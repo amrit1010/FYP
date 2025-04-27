@@ -1,0 +1,131 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block container %}
+
+<div class="content">
+  <div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mt-4 mb-3">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="m-0 text-dark">Profile</h4>
+          <ol class="breadcrumb m-0">
+                  <li class="breadcrumb-item"><a href="{% url 'shop:home' %}"> Visit Site</a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-rounded mb-4 shadow-sm">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <!-- Profile Picture and Basic Info -->
+              <div class="col-md-4 text-center text-md-start mb-4 mb-md-0">
+                <img
+                  src="{% static 'dashboard/assets/img/earth.svg' %}"
+                  alt="Profile Picture"
+                  class="img-fluid rounded-circle mb-3 border shadow-sm"
+                  width="150"
+                  height="150"
+                />
+                <h5 class="mb-1 text-dark">{{ user.full_name }}</h5>
+                <p class="text-muted mb-3">{{ user.role|title }}</p>
+                <a href="{% url 'dashboard:profile_edit' %}" class="btn btn-outline-primary btn-sm px-4">
+                  Edit Profile
+                </a>
+                <a href="{% url 'dashboard:change_password' %}" class="btn btn-outline-warning btn-sm px-4">
+                  Change Password
+                </a>
+              </div>
+
+              <!-- Stylish Vertical Profile Details -->
+              <div class="col-md-8">
+                <div class="details-container">
+                  <h6 class="text-dark mb-4">Profile Details</h6>
+                  <div class="detail-item">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">{{ user.email }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Phone</span>
+                    <span class="detail-value">{{ user.phone }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">KYC Status</span>
+                    <span class="detail-value">
+                      {% if user.kyc_verified %}
+                        <span class="badge bg-success rounded-pill">Verified</span>
+                      {% else %}
+                        <span class="badge bg-warning rounded-pill">Not Verified</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Account Status</span>
+                    <span class="detail-value">
+                      {% if user.is_active %}
+                        <span class="badge bg-success rounded-pill">Active</span>
+                      {% else %}
+                        <span class="badge bg-danger rounded-pill">Inactive</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .details-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+  }
+
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  .detail-value {
+    color: #212529;
+    font-size: 1rem;
+  }
+
+  .detail-item:hover {
+    background: #e9ecef;
+    padding-left: 10px;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+</style>
+
+{% endblock container %}

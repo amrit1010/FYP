@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<body class="config">
+    <div class="preloader is-active">
+        <div class="preloader__wrap">
+            <img class="preloader__img" src="{% static 'images/preloader.png' %}" alt="">
+        </div>
+    </div>
+
+    <!--====== App Content ======-->
+    <div class="app-content">
+
+        <!--====== Section 1 ======-->
+        <div class="u-s-p-t-90">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5">
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <!--====== Product Breadcrumb ======-->
+                        <div class="pd-breadcrumb u-s-m-b-30">
+                            <ul class="pd-breadcrumb__list">
+                                <li class="has-separator">
+                                    <a href="{% url 'shop:home' %}">Home</a>
+                                </li>
+                                <li class="has-separator">
+                                    <a href="#">{% if product.categories %}{{ product.categories.name }}{% else %}Uncategorized{% endif %}</a>
+                                </li>
+                                <li class="is-marked">
+                                    <a href="#">{{ product.name }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--====== End - Product Breadcrumb ======-->
+
+                        <!--====== Product Detail Zoom ======-->
+                        <div class="pd u-s-m-b-30">
+                            <div class="slider-fouc pd-wrap">
+                                <div id="pd-o-initiate">
+                                    {% if product.image %}
+                                        <div class="pd-o-img-wrap" data-src="{{ product.image.url }}">
+                                            <img class="u-img-fluid" src="{{ product.image.url }}" data-zoom-image="{{ product.image.url }}" alt="{{ product.name }}">
+                                        </div>
+                                    {% else %}
+                                        <div class="pd-o-img-wrap" data-src="{% static 'images/product/electronic/product2.jpg' %}">
+                                            <img class="u-img-fluid" src="{% static 'images/product/electronic/product2.jpg' %}" data-zoom-image="{% static 'images/product/electronic/product2.jpg' %}" alt="{{ product.name|default:'No name' }}">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <span class="pd-text">Click for larger zoom</span>
+                            </div>
+                            <div class="u-s-m-t-15">
+                                <div class="slider-fouc">
+                                    <div id="pd-o-thumbnail">
+                                        {% if product.image %}
+                                            <div>
+                                                <img class="u-img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                            </div>
+                                        {% else %}
+                                            <div>
+                                                <img class="u-img-fluid" src="{% static 'images/product/electronic/product2.jpg' %}" alt="{{ product.name|default:'No name' }}">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--====== End - Product Detail Zoom ======-->
+                    </div>
+                    <div class="col-lg-7">
+
+                        <!--====== Product Right Side Details ======-->
+                        <div class="pd-detail">
+                            <div>
+                                <span class="pd-detail__name">{{ product.name }}</span>
+                            </div>
+                            <div>
+                                <div class="pd-detail__inline">
+                                    <span class="pd-detail__price">Rs {{ product.price }}</span>
+                                </div>
+                            </div>
+                            <div class="u-s-m-b-15">
+                                <div class="pd-detail__rating gl-rating-style">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                    <span class="pd-detail__review u-s-m-l-4">
+                                        <a href="#">23 Reviews</a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="u-s-m-b-15">
+                                <div class="pd-detail__inline">
+                                    <span class="pd-detail__stock">{{ product.stock }} in stock</span>
+                                    {% if product.stock <= 2 %}
+                                        <span class="pd-detail__left">Only {{ product.stock }} left</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="u-s-m-b-15">
+                                <span class="pd-detail__preview-desc">{{ product.description|default:"No description available." }}</span>
+                            </div>
+                            
+                            <div class="u-s-m-b-15">
+                                <ul class="pd-social-list">
+                                    <li><a class="s-fb--color-hover" href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                    <li><a class="s-tw--color-hover" href="#"><i class="fab fa-twitter"></i></a></li>
+                                    <li><a class="s-insta--color-hover" href="#"><i class="fab fa-instagram"></i></a></li>
+                                    <li><a class="s-wa--color-hover" href="#"><i class="fab fa-whatsapp"></i></a></li>
+                                    <li><a class="s-gplus--color-hover" href="#"><i class="fab fa-google-plus-g"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="u-s-m-b-15">
+                                <form class="pd-detail__form" method="POST" action="{% url 'shop:add_to_cart' product.id %}" id="add-to-cart-form">
+                                    {% csrf_token %}
+                                        <div class="pd-detail-inline-2">
+                                            <div class="u-s-m-b-15">
+                                                <!-- Quantity Counter -->
+                                                <div class="quantity-wrapper">
+                                                    <span class="quantity-decrease fas fa-minus"></span>
+                                                    <input class="quantity-value" 
+                                                        type="number" 
+                                                        name="quantity" 
+                                                        value="{{ initial_quantity }}" 
+                                                        data-min="1" 
+                                                        data-max="{{ product.stock }}">
+                                                    <span class="quantity-increase fas fa-plus"></span>
+                                            </div>
+                                            <!--====== End - Input Counters ======-->
+                                        </div>
+                                        
+                                        <div class="u-s-m-b-15">
+                                            {% if request.user.is_authenticated %}
+                                                <!-- Show both Add to Cart and Chat with Vendor if authenticated -->
+                                                <button class="btn btn--e-brand-b-2" type="submit" style="background-color:rgb(232, 105, 14);">Add to Cart</button>
+                                                {% if request.user != product.vendor %}
+                                                    <a href="{% url 'shop:chat_with_vendor' product.id %}" class="btn btn--e-brand-b-2" style="background-color:rgb(232, 105, 14); margin-left: 10px;">Chat with Vendor</a>
+                                                {% endif %}
+                                            {% else %}
+                                                <!-- Show only Login to Add to Cart if not authenticated -->
+                                                <a href="{% url 'core:login' %}" class="btn btn--e-brand-b-2">Login to Add to Cart</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Separate section for additional buttons -->
+                                {% if request.user.is_authenticated %}
+                                <div class="u-s-m-b-15">
+                                    {% if product.product_type != 'auction' %}
+                                        <form method="POST" action="{% url 'shop:subscribe_to_price_drop' product.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn--e-brand-b-2" style="background-color:rgb(232, 105, 14); margin-left: 10px;">Get Price Drop Alerts</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            </div>
+
+                            </div>
+                            <div class="u-s-m-b-15">
+                                <span class="pd-detail__label u-s-m-b-8">Product Policy:</span>
+                                <ul class="pd-detail__policy-list">
+                                    <li><i class="fas fa-check-circle u-s-m-r-8"></i><span>Buyer Protection.</span></li>
+                                    <li><i class="fas fa-check-circle u-s-m-r-8"></i><span>Full Refund if you don't receive your order.</span></li>
+                                    <li><i class="fas fa-check-circle u-s-m-r-8"></i><span>Returns accepted if product not as described.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--====== End - Product Right Side Details ======-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--====== End - Section 1 ======-->
+
+    </div>
+    <!--====== End - App Content ======-->
+
+                <!--====== Product Detail Tab ======-->
+                <div class="u-s-p-y-90">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="pd-tab">
+                                    <div class="u-s-m-b-30">
+                                        <ul class="nav pd-tab__list">
+                                            
+                                            <li class="nav-item">
+    
+                                                <a class="nav-link active" id="view-review" data-toggle="tab" href="#pd-rev">
+                                                    REVIEWS <span>({{ reviews.count }})</span>
+                                                </a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                    <!--====== Tab 3 ======-->
+                                    <div class="tab-pane active" id="pd-rev">
+                                            <div class="pd-tab__rev">
+                                                <div class="u-s-m-b-30">
+                                                    
+                                                </div>
+                                                <div class="u-s-m-b-30">
+                                                    <form class="pd-tab__rev-f1">
+                                                        <div class="rev-f1__group">
+                                                            <div class="u-s-m-b-15">
+                                                                <h2>{{ reviews.count }} Review(s) for {{ product.name }}</h2>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                        <div class="rev-f1__review">
+                                                            
+                                                            {% for review in reviews %}
+                                                                <div class="review-o u-s-m-b-15">
+                                                                    <div class="review-o__info u-s-m-b-8">
+                                                                        <span class="review-o__name">{{ review.name }}</span>
+                                                                        <span class="review-o__date">{{ review.created_at|date:"d M Y H:i" }}</span>
+                                                                    </div>
+                                                                    <p class="review-o__text">{{ review.comment }}</p>
+                                                                </div>
+                                                                {% empty %}
+                                                                <p>No reviews yet. Be the first to review this product!</p>
+                                                                {% endfor %}
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                
+                                                        <div class="rev-f2__group">
+                                                                                            <!-- Review Form -->
+                                <!-- Review Form -->
+                                        <div class="rev-f2__group">
+                                            {% if user_is_authenticated %}
+                                                {% if has_purchased %}
+                                                    <form method="POST" class="pd-tab__rev-f1">
+                                                        {% csrf_token %}
+                                                        <div class="u-s-m-b-15">
+                                                            <label class="gl-label" for="reviewer-text">YOUR REVIEW *</label>
+                                                            <textarea name="comment" class="text-area text-area--primary-style" id="reviewer-text" required></textarea>
+                                                        </div>
+                                                        <div class="u-s-m-b-15">
+                                                            <label class="gl-label" for="reviewer-name">NAME *</label>
+                                                            <input class="input-text input-text--primary-style" type="text" id="reviewer-name" name="name" value="{{ user.full_name }}" readonly required>
+                                                        </div>
+                                                        <div class="u-s-m-b-15">
+                                                            <label class="gl-label" for="reviewer-email">EMAIL *</label>
+                                                            <input class="input-text input-text--primary-style" type="email" id="reviewer-email" name="email" value="{{ user.email }}" readonly required>
+                                                        </div>
+                                                        <button class="btn btn--e-brand-shadow" type="submit">SUBMIT</button>
+                                                    </form>
+                                                {% else %}
+                                                    <p class="u-s-m-b-15">You must purchase this product to submit a review.</p>
+                                                {% endif %}
+                                            {% else %}
+                                                <p class="u-s-m-b-15"><a href="{% url 'core:login' %}">Log in</a> to check if you can review this product.</p>
+                                            {% endif %}
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                        <!--====== End - Tab 3 ======-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--====== End - Product Detail Tab ======-->
+<!-- Embedded CSS -->
+<style>
+    .quantity-wrapper {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .quantity-decrease, .quantity-increase {
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f5;
+        color: #333;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+    .quantity-decrease:hover, .quantity-increase:hover {
+        background-color: #e0e0e0;
+    }
+    .quantity-value {
+        width: 50px;
+        height: 30px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        padding: 0;
+        margin: 0;
+        font-size: 14px;
+        outline: none;
+    }
+    .u-s-m-b-15 {
+        margin-bottom: 15px;
+    }
+
+    .rev-f2__group {
+        max-width: 600px; /* Adjust the width as needed */
+        
+    }
+    
+    /* Ensure input fields and text areas are full width */
+    .rev-f2__group .text-area,
+    .rev-f2__group .input-text {
+        width: 100%; /* Make the input fields take up full width */
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    /* Button width adjustment */
+    .rev-f2__group button {
+        width: 100%;
+        padding:5px;
+    }
+</style>
+
+<!-- Embedded JavaScript -->
+<script>
+    (function ($) {
+        // Quantity Counter Object
+        var QuantityControl = {};
+
+        // Initialize the counter
+        QuantityControl.init = function () {
+            var $quantityWrappers = $('.quantity-wrapper');
+
+            // Debug: Check if elements are found
+            console.log('Quantity wrappers found:', $quantityWrappers.length);
+            if ($quantityWrappers.length === 0) {
+                console.error('No elements with class "quantity-wrapper" found.');
+                return;
+            }
+
+            // Increment button
+            $quantityWrappers.find('.quantity-increase').on('click', function (e) {
+                e.preventDefault();
+                console.log('Increase button clicked');
+                var $input = $(this).siblings('.quantity-value');
+                var currentVal = parseInt($input.val()) || 0;
+                var maxVal = parseInt($input.data('max')) || Infinity;
+                var newVal = Math.min(currentVal + 1, maxVal);
+                $input.val(newVal).trigger('change');
+            });
+
+            // Decrement button
+            $quantityWrappers.find('.quantity-decrease').on('click', function (e) {
+                e.preventDefault();
+                console.log('Decrease button clicked');
+                var $input = $(this).siblings('.quantity-value');
+                var currentVal = parseInt($input.val()) || 0;
+                var minVal = parseInt($(this).siblings('.quantity-value').data('min')) || 1;
+                var newVal = Math.max(currentVal - 1, minVal);
+                $input.val(newVal).trigger('change');
+            });
+
+            // Handle manual input changes
+            $quantityWrappers.find('.quantity-value').on('change', function () {
+                var $this = $(this);
+                var minVal = parseInt($this.data('min')) || 1;
+                var maxVal = parseInt($this.data('max')) || Infinity;
+                var val = parseInt($this.val()) || minVal;
+
+                console.log('Value changed - Min:', minVal, 'Max:', maxVal, 'New Value:', val);
+                val = Math.max(minVal, Math.min(maxVal, val));
+                $this.val(val);
+            });
+        };
+
+        // Run when DOM is ready
+        $(document).ready(function () {
+            console.log('DOM ready - Initializing quantity counter');
+            QuantityControl.init();
+        });
+
+    })(jQuery);
+
+
+    document.getElementById("add-to-cart-form").onsubmit = function(event) {
+        event.preventDefault();
+        
+        fetch(this.action, {
+            method: "POST",
+            body: new FormData(this),
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                // If response status is not OK (like 400), parse as JSON for error message
+                return response.json().then(errorData => Promise.reject(errorData));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Item added to cart!",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(() => {
+                    const cartCountElement = document.getElementById("cart-count");
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.cart_count;
+                    }
+                });
+            }
+        })
+        .catch(errorData => {
+            Swal.fire({
+                title: "Error!",
+                text: errorData.message || "An error occurred",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 1000
+            });
+        });
+    };
+</script>
+    
+</body>
+{% endblock container %}

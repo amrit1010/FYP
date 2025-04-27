@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<div class="chat-page u-s-p-t-90">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="chat-title">Chat about <span>{{ product.name }}</span></h2>
+                <p class="vendor-info">Vendor: <strong>{{ product.vendor.full_name }}</strong></p>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        {% for message in chat_messages %}
+                            <div class="chat-message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                                <div class="message-content">
+                                    <p class="sender-name">{{ message.sender.full_name }}</p>
+                                    <p class="message-text">{{ message.message }}</p>
+                                    <span class="chat-timestamp">{{ message.created_at|date:"M d, Y H:i" }}</span>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="no-messages">No messages yet. Start the conversation below!</p>
+                        {% endfor %}
+                    </div>
+
+                    <form class="chat-form" id="chat-form">
+                        <div class="chat-input-group">
+                            <textarea name="message" id="message-input" class="chat-input" placeholder="Type your message..." required></textarea>
+                            <button type="submit" class="btn btn--send">Send</button>
+                        </div>
+                    </form>
+                </div>
+
+                <a href="{% url 'shop:product_detail' product.id %}" class="btn btn--back-to-product">Back to Product</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+
+<style>
+    .chat-page { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding-bottom: 50px; }
+    .chat-title { font-size: 2rem; font-weight: 700; color: #333; text-align: center; margin-bottom: 10px; }
+    .chat-title span { color: #e8690e; font-style: italic; }
+    .vendor-info { text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 20px; }
+    .chat-container { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); padding: 20px; max-height: 600px; position: relative; display: flex; flex-direction: column; transition: all 0.3s ease; }
+    .chat-container:hover { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); }
+    .chat-messages { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+    .chat-message { margin: 15px 0; padding: 15px; border-radius: 10px; animation: fadeIn 0.3s ease-in; }
+    .chat-message.sent { background: linear-gradient(135deg, #e8690e, #ff9f43); color: #fff; margin-left: 20%; text-align: right; }
+    .chat-message.received { background: linear-gradient(135deg, #eceff1, #cfd8dc); color: #333; margin-right: 20%; }
+    .message-content { position: relative; }
+    .sender-name { font-weight: 600; margin-bottom: 5px; }
+    .message-text { margin: 5px 0; word-wrap: break-word; }
+    .chat-timestamp { font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); }
+    .chat-message.received .chat-timestamp { color: #666; }
+    .no-messages { text-align: center; color: #999; font-style: italic; padding: 20px; }
+    .chat-form { position: absolute; bottom: 20px; left: 20px; right: 20px; background: #fff; padding: 10px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+    .chat-input-group { display: flex; gap: 10px; align-items: center; }
+    .chat-input { flex-grow: 1; min-height: 50px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; font-size: 1rem; resize: none; transition: border-color 0.3s ease; }
+    .chat-input:focus { outline: none; border-color: #e8690e; box-shadow: 0 0 5px rgba(232, 105, 14, 0.3); }
+    .btn--send { background: #e8690e; color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease; }
+    .btn--send:hover { background: #d45e0d; transform: translateY(-2px); }
+    .btn--send:active { transform: translateY(1px); }
+    .btn--back-to-product { display: inline-block; margin-top: 20px; padding: 12px 25px; background: #e8690e; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; transition: background 0.3s ease, transform 0.2s ease; }
+    .btn--back-to-product:hover { background: #d45e0d; transform: translateY(-2px); }
+    .btn--back-to-product:active { transform: translateY(1px); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        const productId = "{{ product.id }}";
+        const userId = "{{ request.user.id }}";
+        let socket;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        const baseReconnectDelay = 3000;
+
+        function connectWebSocket() {
+            socket = new WebSocket(`ws://${window.location.host}/ws/chat/${productId}/`);
+
+            socket.onopen = function() {
+                console.log('WebSocket connected');
+                reconnectAttempts = 0;
+            };
+
+            socket.onmessage = function(event) {
+                console.log('Received message:', event.data);
+                try {
+                    const data = JSON.parse(event.data);
+                    if (!data.message || !data.sender_id || !data.sender_name || !data.timestamp) {
+                        console.error('Invalid message format:', data);
+                        return;
+                    }
+                    const messageList = document.getElementById('chat-messages');
+                    const isSent = data.sender_id == userId;
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <p class="sender-name">${data.sender_name}</p>
+                            <p class="message-text">${data.message}</p>
+                            <span class="chat-timestamp">${new Date(data.timestamp).toLocaleString()}</span>
+                        </div>
+                    `;
+                    messageList.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error, 'Data:', event.data);
+                }
+            };
+
+            socket.onclose = function(event) {
+                console.warn('WebSocket closed:', event.code, event.reason);
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts);
+                    console.log(`Reconnecting in ${delay}ms... Attempt ${reconnectAttempts}/${maxReconnectAttempts}`);
+                    setTimeout(connectWebSocket, delay);
+                } else {
+                    console.error('Max reconnect attempts reached.');
+                }
+            };
+
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        connectWebSocket();
+
+        const form = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const message = messageInput.value.trim();
+            if (message && socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInput.value = '';
+                console.log('Sent message:', message);
+            } else {
+                console.error('Cannot send message: WebSocket not open or empty message');
+            }
+        });
+    });
+</script>
+{% endblock container %}

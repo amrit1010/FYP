@@ -1,0 +1,8 @@
+<!-- khalti_payment.html -->
+<form method="POST" action="{% url 'shop:submit_khalti_payment' %}">
+    {% csrf_token %}
+    <input type="hidden" name="purchase_order_id" value="{{ purchase_order_id }}">
+    <input type="hidden" name="amount" value="{{ amount }}">
+    <input type="hidden" name="return_url" value="{{ return_url }}">
+    <button type="submit">Pay with Khalti</button>
+</form>

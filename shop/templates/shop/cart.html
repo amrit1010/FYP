@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<body class="config">
+    <div class="preloader is-active">
+        <div class="preloader__wrap">
+            <img class="preloader__img" src="{% static 'images/preloader.png' %}" alt="">
+        </div>
+    </div>
+
+    <!--====== Main App ======-->
+    <div id="app">
+
+        <!--====== App Content ======-->
+        <div class="app-content">
+
+            <!--====== Section 1 ======-->
+            <div class="u-s-p-y-60">
+                <div class="section__content">
+                    <div class="container">
+                        <div class="breadcrumb">
+                            <div class="breadcrumb__wrap">
+                                <ul class="breadcrumb__list">
+                                    <li class="has-separator">
+                                        <a href="{% url 'shop:home' %}">Home</a>
+                                    </li>
+                                    <li class="is-marked">
+                                        <a href="{% url 'shop:cart' %}">Cart</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--====== End - Section 1 ======-->
+
+            <!--====== Section 2 ======-->
+            <div class="u-s-p-b-60">
+                <div class="section__intro u-s-m-b-60">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="section__text-wrap">
+                                    <h1 class="section__heading u-c-secondary">SHOPPING CART</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section__content">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 u-s-m-b-30">
+                                <div class="table-responsive">
+                                    <table class="table-p">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in cart_items %}
+                                            <tr>
+                                                <td>
+                                                    <div class="table-p__box">
+                                                        <div class="table-p__img-wrap">
+                                                            <img class="u-img-fluid" src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'images/product/electronic/product2.jpg' %}{% endif %}" alt="{{ item.product.name }}">
+                                                        </div>
+                                                        <div class="table-p__info">
+                                                            <span class="table-p__name">
+                                                                <a href="{% url 'shop:product_detail' item.product.id %}">{{ item.product.name }}</a>
+                                                            </span>
+                                                            <span class="table-p__category">
+                                                                <a href="#">{{ item.product.categories.name|default:"Uncategorized" }}</a>
+                                                            </span>
+                                                            <ul class="table-p__variant-list">
+                                                                {% if item.product.size %}
+                                                                    <li><span>Size: {{ item.product.size.name }}</span></li>
+                                                                {% endif %}
+                                                                {% if item.product.brand %}
+                                                                    <li><span>Brand: {{ item.product.brand.name }}</span></li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="table-p__price">Rs {{ item.product.price }}</span>
+                                                </td>
+                                                <td>
+                                                    <form method="POST" action="{% url 'shop:update_cart' item.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="table-p__input-counter-wrap">
+                                                            <div class="input-counter">
+                                                                <span class="input-counter__minus fas fa-minus"></span>
+                                                                <input class="input-counter__text input-counter--text-primary-style" type="text" name="quantity" value="{{ item.quantity }}" data-min="1" data-max="{{ item.product.stock|default:'100' }}">
+                                                                <span class="input-counter__plus fas fa-plus"></span>
+                                                            </div>
+                                                            <button type="submit" class="btn btn--e-transparent-brand-b-2 u-s-m-t-10">Update</button>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <span class="table-p__price">Rs {{ item.total_price }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="table-p__del-wrap">
+                                                        <a class="far fa-trash-alt table-p__delete-link" href="{% url 'shop:remove_from_cart' item.id %}"></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="5">Your cart is empty.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="route-box">
+                                    <div class="route-box__g1">
+                                        <a class="route-box__link" href="{% url 'shop:home' %}">
+                                            <i class="fas fa-long-arrow-alt-left"></i>
+                                            <span>CONTINUE SHOPPING</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--====== End - Section 2 ======-->
+
+            <!--====== Section 3 ======-->
+            <div class="u-s-p-b-60">
+                <div class="section__content">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 u-s-m-b-30">
+                                <form class="f-cart" method="POST" action="{% url 'shop:checkout' %}">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-6 u-s-m-b-30">
+                                            <div class="f-cart__pad-box">
+                                                <h1 class="gl-h1">SHIPPING ADDRESS</h1>
+                                                <span class="gl-text u-s-m-b-30">Enter your destination for shipping.</span>
+                                                <div class="u-s-m-b-15">
+                                                    <label class="gl-label" for="shipping-country">COUNTRY *</label>
+                                                    <select class="select-box select-box--primary-style" id="shipping-country" name="country">
+                                                        <option selected value="">Choose Country</option>
+                                                        <option value="uae">United Arab Emirate (UAE)</option>
+                                                        <option value="uk">United Kingdom (UK)</option>
+                                                        <option value="us">United States (US)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="u-s-m-b-15">
+                                                    <label class="gl-label" for="shipping-state">STATE/PROVINCE *</label>
+                                                    <select class="select-box select-box--primary-style" id="shipping-state" name="state">
+                                                        <option selected value="">Choose State/Province</option>
+                                                        <option value="al">Alabama</option>
+                                                        <option value="ak">Alaska</option>
+                                                        <option value="ny">New York</option>
+                                                    </select>
+                                                </div>
+                                                <div class="u-s-m-b-15">
+                                                    <label class="gl-label" for="shipping-zip">ZIP/POSTAL CODE *</label>
+                                                    <input class="input-text input-text--primary-style" type="text" id="shipping-zip" name="postal_code" placeholder="Zip/Postal Code" required>
+                                                </div>
+
+                                                <div class="u-s-m-b-15">
+                                                    <label class="gl-label" for="first-name">FIRST NAME *</label>
+                                                    <input class="input-text input-text--primary-style" type="text" id="first-name" name="first_name" placeholder="Enter First Name" required>
+                                                </div>
+                                                
+                                                <div class="u-s-m-b-15">
+                                                    <label class="gl-label" for="last-name">LAST NAME *</label>
+                                                    <input class="input-text input-text--primary-style" type="text" id="last-name" name="last_name" placeholder="Enter Last Name" required>
+                                                </div>
+
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-6 u-s-m-b-30">
+                                            <div class="f-cart__pad-box">
+                                                <div class="u-s-m-b-30">
+                                                    <table class="f-cart__table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>SHIPPING</td>
+                                                                <td>Rs 4.00</td> <!-- Static; update if dynamic -->
+                                                            </tr>
+                                                            <tr>
+                                                                <td>TAX</td>
+                                                                <td>Rs 0.00</td> <!-- Static -->
+                                                            </tr>
+                                                            <tr>
+                                                                <td>SUBTOTAL</td>
+                                                                <td>Rs {{ cart_total }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>GRAND TOTAL</td>
+                                                                <td>Rs {{ cart_total|add:4 }}</td> <!-- Assuming Rs 4 shipping -->
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn--e-brand-b-2" type="submit">PROCEED TO CHECKOUT</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--====== End - Section 3 ======-->
+        </div>
+        <!--====== End - App Content ======-->
+    </div>
+    <!--====== End - Main App ======-->
+</body>
+{% endblock container %}

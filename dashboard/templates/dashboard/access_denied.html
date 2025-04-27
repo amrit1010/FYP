@@ -1,0 +1,26 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block container %}
+    <div class="container">
+        <h2>Access Denied</h2>
+        <p>{{ message }}</p>
+        <a href="{% url 'dashboard:vendor_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+{% endblock container %}

@@ -1,0 +1,60 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block container %}
+
+<div class="content">
+  <div class="container-fluid">
+    <div class="row mt-2">
+      <div class="col-md-6 float-start">
+        <h4 class="m-0 text-dark text-muted">Edit Profile</h4>
+      </div>
+      <div class="col-md-6">
+        <ol class="breadcrumb float-end">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard:vendor-profile' %}">Profile</a></li>
+          <li class="breadcrumb-item active">Edit</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="canvas-wrapper">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-rounded">
+              <div class="card-body">
+                <form method="POST">
+                  {% csrf_token %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %}">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                  <div class="mb-3">
+                    <label for="{{ form.full_name.id_for_label }}" class="form-label">Full Name</label>
+                    {{ form.full_name }}
+                  </div>
+                  <div class="mb-3">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                    {{ form.phone }}
+                  </div>
+                  <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                    {{ form.email }}
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <a href="{% url 'dashboard:vendor-profile' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock container %}

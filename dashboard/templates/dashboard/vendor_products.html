@@ -1,0 +1,165 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block container %}
+
+<div id="bodywrapper" class="container-fluid showhidetoggle">
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <h2 class="h4">{{ vendor.full_name }} Products</h2>
+                </div>
+                <div class="col-md-6 text-start">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}"> Visit Site</a></li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="content">
+                    <div class="canvas-wrapper">
+                        <div class="d-flex justify-content-between align-items-center mb-4 text-start">
+                            <h3 class="h5 text-muted">{{ product_type|title }} Products</h3>
+                            <a href="{% url 'dashboard:add_product' %}?type={{ product_type }}" 
+                               class="btn btn-sm btn-primary">
+                               <i class="fas fa-plus me-2"></i>Add Product
+                            </a>
+                        </div>
+
+                        {% if products %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Price</th>
+                                        <th>Discount</th>
+                                        <th>Stock</th>
+                                        <th>SKU</th>
+                                        {% if product_type == 'auction' %}
+                                                    <th>Starting Bid</th>
+                                                    <th>End Time</th>
+                                                    <th>Time Left</th>
+                                                {% endif %}
+                                        <th>Image</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ product.name }}</td>
+                                        <td class="text-muted small">{{ product.description|truncatechars:40|default:'N/A' }}</td>
+                                        <td>${{ product.price }}</td>
+                                        <td>{{ product.discount|default:'0' }}%</td>
+                                        <td>{{ product.stock|default:'N/A' }}</td>
+                                        <td><span class="badge bg-secondary">{{ product.sku|default:'N/A' }}</span></td>
+                                        {% if product_type == 'auction' %}
+                                            <td>${{ product.auction.starting_bid|default:'0.00' }}</td>
+                                            <td>{{ product.auction.end_time|date:"Y-m-d H:i" }}</td>
+                                            <td>{{ product.auction.time_left }}</td>
+                                        {% endif %}
+                                        <td>
+                                            {% if product.image %}
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                                                 class="img-thumbnail" style="max-width: 60px; height: auto;">
+                                            {% else %}
+                                            <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <!-- Display product status with a badge -->
+                                            <span class="badge 
+                                                {% if product.status == 'pending' %}bg-warning
+                                                {% elif product.status == 'approved' %}bg-success
+                                                {% elif product.status == 'rejected' %}bg-danger{% endif %}">
+                                                {{ product.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="text-start">
+                                            <div class="d-flex gap-2">
+                                                <a href="{% url 'dashboard:edit_product' product.id %}?type={{ product_type }}" 
+                                                   class="btn btn-sm btn-warning">
+                                                   <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <form action="{% url 'dashboard:remove_product' product.id %}?type={{ product_type }}" 
+                                                      method="post" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" 
+                                                            class="btn btn-sm btn-danger" 
+                                                            onclick="return confirm('Are you sure?');">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No {{ product_type }} products found.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Table header styling */
+    .table th {
+        font-weight: 600;
+        background-color: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    /* Image styling */
+    .img-thumbnail {
+        padding: 0.25rem;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+
+    /* Badge styling */
+    .badge {
+        font-weight: 500;
+        letter-spacing: 0.05em;
+    }
+    
+    /* Button sizing */
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+    }
+
+    /* Ensuring table cells and action buttons are aligned */
+    .table td {
+        vertical-align: middle; /* Ensures buttons are vertically centered */
+    }
+
+    .d-flex {
+        display: flex;
+        gap: 10px; /* Adjust gap between buttons */
+    }
+
+    /* Responsive table adjustments */
+    @media (max-width: 768px) {
+        .table td, .table th {
+            padding: 0.5rem;
+        }
+    }
+</style>
+
+{% endblock container %}

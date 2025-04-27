@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+<div class="container mt-5" style="max-width: 700px;">
+    <h2 class="mb-4 fw-bold" style="color: #1a1a1a;">Notifications</h2>
+
+    {% if notifications %}
+        <!-- Filter Dropdown and Mark All as Read -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 20px; padding: 6px 12px;">
+                    <i class="fas fa-filter me-2"></i>
+                    {% if current_filter == 'all' %}All{% elif current_filter == 'win' %}Winner{% elif current_filter == 'outbid' %}Outbid{% elif current_filter == 'price_drop' %}Price Drop{% else %}Ending Soon{% endif %}
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown" style="min-width: 150px;">
+                    <li><a class="dropdown-item {% if current_filter == 'all' %}active{% endif %}" href="{% url 'shop:notifications' %}?filter=all">All</a></li>
+                    <li><a class="dropdown-item {% if current_filter == 'win' %}active{% endif %}" href="{% url 'shop:notifications' %}?filter=win">Winner</a></li>
+                    <li><a class="dropdown-item {% if current_filter == 'outbid' %}active{% endif %}" href="{% url 'shop:notifications' %}?filter=outbid">Outbid</a></li>
+                    <li><a class="dropdown-item {% if current_filter == 'price_drop' %}active{% endif %}" href="{% url 'shop:notifications' %}?filter=price_drop">Price Drop</a></li>
+                    <li><a class="dropdown-item {% if current_filter == 'ending_soon' %}active{% endif %}" href="{% url 'shop:notifications' %}?filter=ending_soon">Ending Soon</a></li>
+                </ul>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="mark_read" class="btn btn-link text-muted p-0" style="font-size: 0.9rem;">Mark all as read</button>
+            </form>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="list-group list-group-flush shadow-sm" style="border: 1px solid #e9ecef; border-radius: 10px; background-color: #fff;">
+            {% for notification in notifications %}
+                <div class="d-flex align-items-start py-3 px-3 border-bottom" style="transition: background-color 0.2s;">
+                    <!-- Icon based on notification type -->
+                    <div class="me-3">
+                        {% if notification.notification_type == 'win' %}
+                            <i class="fas fa-trophy text-success" style="font-size: 1.5rem;"></i>
+                        {% elif notification.notification_type == 'outbid' %}
+                            <i class="fas fa-exclamation-circle text-warning" style="font-size: 1.5rem;"></i>
+                        {% elif notification.notification_type == 'ending_soon' %}
+                            <i class="fas fa-clock text-info" style="font-size: 1.5rem;"></i>
+                        {% elif notification.notification_type == 'price_drop' %}
+                            <i class="fas fa-tag text-primary" style="font-size: 1.5rem;"></i>
+                        {% endif %}
+                    </div>
+
+                    <!-- Notification Content -->
+                    <div class="flex-grow-1">
+                        <p class="mb-1" style="font-size: 1rem; color: #333;">
+                            {{ notification.message }}
+                        </p>
+                        <small class="text-muted" style="font-size: 0.85rem;">
+                            {{ notification.created_at|timesince }} ago
+                        </small>
+                    </div>
+
+                    <!-- Action Link -->
+                    <div class="ms-3">
+                        {% if notification.auction %}
+                            <a href="{% url 'shop:auction_detail' notification.auction.id %}" class="btn btn-sm btn-outline-primary" style="border-radius: 15px;">View</a>
+                        {% elif notification.product %}
+                            <a href="{% url 'shop:product_detail' notification.product.id %}" class="btn btn-sm btn-outline-primary" style="border-radius: 15px;">View</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-bell-slash text-muted" style="font-size: 2rem;"></i>
+            <p class="text-muted mt-2" style="font-size: 1.1rem;">No new notifications</p>
+            <a href="{% url 'shop:home' %}" class="btn btn-outline-primary mt-2" style="border-radius: 20px;">Browse Products</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .list-group-flush > .d-flex:hover {
+        background-color: #f5f6f5;
+    }
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+    .dropdown-menu {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .dropdown-item:hover {
+        background-color: #e9ecef;
+    }
+    .dropdown-item.active {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+{% endblock container %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}  <!-- Extend your base template -->
+
+{% block container %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Your Profile</h2>
+        </div>
+        <div class="card-body">
+            <div class="profile-details">
+                <p class="mb-3"><strong>Full Name:</strong> {{ user.full_name }}</p>
+                <p class="mb-3"><strong>Email:</strong> {{ user.email }}</p>
+                <p class="mb-3"><strong>Phone:</strong> {{ user.phone }}</p>
+            </div>
+            <a href="{% url 'customer:edit_profile' %}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+</div>
+<br><br>
+{% endblock container %}
