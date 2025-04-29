@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block container %}
 <body class="config">
     <div class="preloader is-active">
@@ -8,22 +7,16 @@
             <img class="preloader__img" src="{% static 'images/preloader.png' %}" alt="">
         </div>
     </div>
-
-    <!--====== App Content ======-->
     <div class="app-content">
-
-        <!--====== Section 1 ======-->
         <div class="u-s-p-t-90">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-5">
-
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert alert-{{ message.tags }}">{{ message }}</div>
                             {% endfor %}
                         {% endif %}
-                        <!--====== Product Breadcrumb ======-->
                         <div class="pd-breadcrumb u-s-m-b-30">
                             <ul class="pd-breadcrumb__list">
                                 <li class="has-separator">
@@ -37,9 +30,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <!--====== End - Product Breadcrumb ======-->
-
-                        <!--====== Product Detail Zoom ======-->
                         <div class="pd u-s-m-b-30">
                             <div class="slider-fouc pd-wrap">
                                 <div id="pd-o-initiate">
@@ -71,11 +61,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!--====== End - Product Detail Zoom ======-->
                     </div>
                     <div class="col-lg-7">
-
-                        <!--====== Product Right Side Details ======-->
                         <div class="pd-detail">
                             <div>
                                 <span class="pd-detail__name">{{ product.name }}</span>

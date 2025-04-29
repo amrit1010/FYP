@@ -24,8 +24,6 @@ from django.utils.encoding import force_bytes, force_str
 # Create your views here.
 
 User = get_user_model()
-
-
 def register(request):
     if request.method == 'POST':
         try:
@@ -34,56 +32,37 @@ def register(request):
             phone = request.POST.get('phone', '').strip()
             password = request.POST.get('password', '')
             role = request.POST.get('role', 'user')
-
             print("-------------------")
-            # Check if any required field is empty
             if not full_name or not email or not phone or not password:
                 messages.error(request, "All fields are required.")
                 return redirect('core:register')
-
-            # Check if email or phone already exists
-            # if User.objects.filter(email=email).exists():
-            #     messages.error(request, "Email is already registered.")
-            #     return redirect('register')
-
             if User.objects.filter(phone=phone).exists():
                 messages.error(request, "Phone number is already registered.")
                 return redirect('core:register')
-
-            # Create user but keep inactive until email confirmation
             user = User.objects.create_user(email=email, full_name=full_name, phone=phone, password=password)
             user.role = role
             user.is_active = False
             user.save()
-
-            # Generate Email Verification Link
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             activation_link = request.build_absolute_uri(reverse('core:activate', args=[uid, token]))
-
-            # Email Content
             email_subject = 'Activate Your Account'
             email_body = f'Hi {full_name},\n\nClick the link to activate your account: {activation_link}\n\nThank you!'
-
             try:
                 send_mail(
                     email_subject,
                     email_body,
                     settings.EMAIL_HOST_USER,
                     [email],
-                    fail_silently=False,  # Change to True if you want to suppress email errors
-                )
+                    fail_silently=False,)
                 messages.success(request, "Registration successful! Check your email to confirm your account.")
             except Exception as e:
                 messages.error(request, f"Error sending email: {e}")
                 return redirect('core:register')
-
-            return redirect('core:check_email')  # Redirect to a 'Check Email' page
-
+            return redirect('core:check_email')  
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
             return redirect('core:register')
-
     return render(request, 'core/signup.html')
 
 
@@ -112,20 +91,15 @@ def user_login(request):
         email = request.POST['email']
         password = request.POST['password']
         remember = request.POST.get('remember')
-        ip_address = request.META.get('REMOTE_ADDR')  # Get user's IP address
-        user_agent = request.META.get('HTTP_USER_AGENT', '')  # Get user agent (browser info)
+        ip_address = request.META.get('REMOTE_ADDR')  
+        user_agent = request.META.get('HTTP_USER_AGENT', '')  
 
         print('------------------------------')
         print("Attempting Login for:", email)
-        
-        # Attempt authentication
+    
         user = authenticate(request, email=email, password=password)
-
-        # Log the attempt (successful or failed)
         if user:
-            print("Authenticated User:", email)  # Debugging
-
-            # Log successful login attempt
+            print("Authenticated User:", email) 
             SecurityLog.objects.create(
                 user=user,
                 event_type="LOGIN",
@@ -134,31 +108,24 @@ def user_login(request):
             )
 
             login(request, user)
-            request.session.set_expiry(0 if not remember else 604800)  # 7 days
+            request.session.set_expiry(0 if not remember else 604800)  
             
             kyc_exists = KYCVerification.objects.filter(user=user).exists()
-            print(f"KYC Exists for {user.email}: {kyc_exists}")  # Debugging
-
-            # Check if the logged-in user is a vendor and has not completed KYC
+            print(f"KYC Exists for {user.email}: {kyc_exists}") 
             if user.role != 'superadmin' and not kyc_exists:
-                print(f"Redirecting {user.email} to KYC Page.")  # Debugging
+                print(f"Redirecting {user.email} to KYC Page.")  
                 messages.info(request, "Please complete KYC verification before proceeding.")
                 return redirect('customer:kyc_verification')
-
-            # Redirect based on user role
             if user.role == 'vendor':
-                return redirect('dashboard:vendor_dashboard')  # Redirect to vendor dashboard
+                return redirect('dashboard:vendor_dashboard') 
             elif user.role == 'superadmin':
-                return redirect('admin:index')  # Redirect to superadmin dashboard
+                return redirect('admin:index') 
             elif user.role == 'user':
-                return redirect('shop:home')  # Redirect regular users to the home page
+                return redirect('shop:home') 
             else:
-                # Handle any other roles (if they exist)
                 messages.error(request, "Unknown user role. Please contact support.")
                 return redirect('core:login')
-
         else:
-            # Log failed login attempt
             print(f"Invalid credentials for {email}")  # Debugging
             SecurityLog.objects.create(
                 event_type="FAILED_LOGIN",

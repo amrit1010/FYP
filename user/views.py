@@ -25,7 +25,7 @@ def kyc_verification(request):
             kyc.status = 'pending'  # Set status to pending
             kyc.save()
             messages.success(request, "KYC submitted successfully. You can now access the platform.")
-             # Redirect based on user role after KYC submission
+            # Redirect based on user role after KYC submission
             if request.user.role == 'vendor':
                 return redirect('dashboard:vendor_dashboard')
             elif request.user.role == 'superadmin':

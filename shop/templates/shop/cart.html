@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block container %}
 <body class="config">
     <div class="preloader is-active">
@@ -8,14 +7,8 @@
             <img class="preloader__img" src="{% static 'images/preloader.png' %}" alt="">
         </div>
     </div>
-
-    <!--====== Main App ======-->
     <div id="app">
-
-        <!--====== App Content ======-->
         <div class="app-content">
-
-            <!--====== Section 1 ======-->
             <div class="u-s-p-y-60">
                 <div class="section__content">
                     <div class="container">
@@ -29,14 +22,8 @@
                                         <a href="{% url 'shop:cart' %}">Cart</a>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </div></div></div></div>
             </div>
-            <!--====== End - Section 1 ======-->
-
-            <!--====== Section 2 ======-->
             <div class="u-s-p-b-60">
                 <div class="section__intro u-s-m-b-60">
                     <div class="container">
@@ -45,11 +32,8 @@
                                 <div class="section__text-wrap">
                                     <h1 class="section__heading u-c-secondary">SHOPPING CART</h1>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
+                            </div></div></div>
                 </div>
-
                 <div class="section__content">
                     <div class="container">
                         <div class="row">
@@ -132,16 +116,7 @@
                                             <i class="fas fa-long-arrow-alt-left"></i>
                                             <span>CONTINUE SHOPPING</span>
                                         </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--====== End - Section 2 ======-->
-
-            <!--====== Section 3 ======-->
+                                    </div></div></div></div></div></div></div>
             <div class="u-s-p-b-60">
                 <div class="section__content">
                     <div class="container">
@@ -155,41 +130,45 @@
                                                 <h1 class="gl-h1">SHIPPING ADDRESS</h1>
                                                 <span class="gl-text u-s-m-b-30">Enter your destination for shipping.</span>
                                                 <div class="u-s-m-b-15">
-                                                    <label class="gl-label" for="shipping-country">COUNTRY *</label>
+                                                    <label class="gl-label" for="shipping-country">Province</label>
                                                     <select class="select-box select-box--primary-style" id="shipping-country" name="country">
-                                                        <option selected value="">Choose Country</option>
-                                                        <option value="uae">United Arab Emirate (UAE)</option>
-                                                        <option value="uk">United Kingdom (UK)</option>
-                                                        <option value="us">United States (US)</option>
+                                                        <option selected value="">Choose Province</option>
+                                                        <option value="koshi">Koshi Province</option>
+                                                        <option value="madesh">Madhesh Province</option>
+                                                        <option value="bagmati">Bagmati Province</option>
+                                                        <option value="gandaki">Gandaki Province</option>
+                                                        <option value="lumbini">Lumbini Province</option>
+                                                        <option value="karnali">Karnali Province</option>
+                                                        <option value="sudurpacchim">Sudurpashchim Province</option>
                                                     </select>
                                                 </div>
                                                 <div class="u-s-m-b-15">
-                                                    <label class="gl-label" for="shipping-state">STATE/PROVINCE *</label>
+                                                    <label class="gl-label" for="shipping-state">City</label>
                                                     <select class="select-box select-box--primary-style" id="shipping-state" name="state">
-                                                        <option selected value="">Choose State/Province</option>
-                                                        <option value="al">Alabama</option>
-                                                        <option value="ak">Alaska</option>
-                                                        <option value="ny">New York</option>
+                                                        <option selected value="">Choose City</option>
+                                                        <option value="Kakarvitta">Kakarvitta</option>
+                                                        <option value="Birtamod">Birtamod</option>
+                                                        <option value="Damak">Damak</option>
+                                                        <option value="Urlabari">Urlabari</option>
+                                                        <option value="Biratchowk">Biratchowk</option>
+                                                        <option value="Itahari">Itahari</option>
+                                                        <option value="Dharan">Dharan</option>
+                                                        <option value="Biratnagar">Biratnagar</option>
+                                                        <option value="Kathmandu">Kathmandu</option>
                                                     </select>
                                                 </div>
                                                 <div class="u-s-m-b-15">
                                                     <label class="gl-label" for="shipping-zip">ZIP/POSTAL CODE *</label>
                                                     <input class="input-text input-text--primary-style" type="text" id="shipping-zip" name="postal_code" placeholder="Zip/Postal Code" required>
                                                 </div>
-
                                                 <div class="u-s-m-b-15">
                                                     <label class="gl-label" for="first-name">FIRST NAME *</label>
                                                     <input class="input-text input-text--primary-style" type="text" id="first-name" name="first_name" placeholder="Enter First Name" required>
                                                 </div>
-                                                
                                                 <div class="u-s-m-b-15">
                                                     <label class="gl-label" for="last-name">LAST NAME *</label>
                                                     <input class="input-text input-text--primary-style" type="text" id="last-name" name="last_name" placeholder="Enter Last Name" required>
-                                                </div>
-
-                                                
-                                            </div>
-                                        </div>
+                                                </div></div></div>
                                         <div class="col-lg-4 col-md-6 u-s-m-b-30">
                                             <div class="f-cart__pad-box">
                                                 <div class="u-s-m-b-30">
@@ -216,20 +195,8 @@
                                                 </div>
                                                 <div>
                                                     <button class="btn btn--e-brand-b-2" type="submit">PROCEED TO CHECKOUT</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--====== End - Section 3 ======-->
-        </div>
-        <!--====== End - App Content ======-->
-    </div>
-    <!--====== End - Main App ======-->
+                                                </div></div></div>
+                                    </div></form></div></div></div></div>
+            </div></div></div>
 </body>
 {% endblock container %}

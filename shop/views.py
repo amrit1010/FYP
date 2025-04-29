@@ -155,7 +155,7 @@ def product_detail(request, product_id):
         else:
             # Pre-fill the form with the logged-in user's name and email
             initial_data = {
-               'name': request.user.full_name,
+                'name': request.user.full_name,
                 'email': request.user.email,
             }
             form = ReviewForm(initial=initial_data)
@@ -210,7 +210,6 @@ def category_products(request, category_id):
 def get_cart(user):
     """Retrieve or create a cart for the user."""
     cart, created = Cart.objects.get_or_create(user=user)
-    
     return cart
 
 @check_blacklisted

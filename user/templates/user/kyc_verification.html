@@ -1,12 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block container %}
-
 <div class="app-content">
-
-    <!--====== Section 1 ======-->
     <div class="u-s-p-y-60">
-        <!--====== Section Content ======-->
         <div class="section__content">
             <div class="container">
                 <div class="breadcrumb">
@@ -24,12 +20,7 @@
             </div>
         </div>
     </div>
-    <!--====== End - Section 1 ======-->
-
-    <!--====== Section 2 ======-->
     <div class="u-s-p-b-60">
-
-        <!--====== Section Intro ======-->
         <div class="section__intro u-s-m-b-60">
             <div class="container">
                 <div class="row">
@@ -41,9 +32,6 @@
                 </div>
             </div>
         </div>
-        <!--====== End - Section Intro ======-->
-
-        <!--====== Section Content ======-->
         <div class="section__content">
             <div class="container">
                 <div class="row row--center">
@@ -52,8 +40,6 @@
                             <div class="l-f-o__pad-box">
                                 <h1 class="gl-h1">PERSONAL INFORMATION</h1>
                                 <span class="gl-text u-s-m-b-30">Please complete your KYC verification to proceed.</span>
-
-                                <!-- Display error or success messages -->
                                 {% if messages %}
                                     <div class="alert alert-danger" role="alert">
                                         {% for message in messages %}
@@ -61,11 +47,8 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-
                                 <form class="l-f-o__form" method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
-
-                                    <!-- Document Type Dropdown -->
                                     <div class="u-s-m-b-30">
                                         <label class="gl-label" for="document_type">Document Type *</label>
                                         <select name="document_type" id="document_type" class="select-box select-box--primary-style u-w-100" required>
@@ -75,17 +58,14 @@
                                             <option value="other">Other</option>
                                         </select>
                                     </div>
-
                                     <div class="u-s-m-b-30">
                                         <label class="gl-label" for="document_number">Document Number *</label>
                                         <input type="text" name="document_number" id="document_number" class="input-text input-text--primary-style" required>
                                     </div>
-
                                     <div class="u-s-m-b-30">
                                         <label class="gl-label" for="document_image">Upload Document *</label>
                                         <input type="file" name="document_image" id="document_image" class="input-text input-text--primary-style" required>
                                     </div>
-
                                     <div class="u-s-m-b-15">
                                         <button class="btn btn--e-transparent-brand-b-2" type="submit">SUBMIT KYC</button>
                                     </div>
@@ -96,10 +76,7 @@
                 </div>
             </div>
         </div>
-        <!--====== End - Section Content ======-->
     </div>
-    <!--====== End - Section 2 ======-->
 </div>
-<!--====== End - App Content ======-->
 
 {% endblock container %}

@@ -1,9 +1,6 @@
 {% extends 'base.html' %} {% load static %} {% block container %}
-<!--====== App Content ======-->
 <div class="app-content">
-  <!--====== Section 1 ======-->
   <div class="u-s-p-y-60">
-    <!--====== Section Content ======-->
     <div class="section__content">
       <div class="container">
         <div class="breadcrumb">
@@ -16,20 +13,10 @@
                 <a href="{% url 'shop:contact' %}">Contact</a>
               </li>
             </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--====== End - Section 1 ======-->
-
-  <!--====== Section 2 ======-->
-  <!-- Include Leaflet CSS & JS -->
+          </div></div></div></div></div>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
   <div class="u-s-p-b-60">
-    <!--====== Section Content ======-->
     <div class="section__content">
       <div class="container">
         <div class="row">
@@ -37,31 +24,18 @@
             <div class="g-map">
               <div id="map" style="width: 100%; height: 400px"></div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--====== End - Section Content ======-->
-  </div>
-  <!--====== End - Section 2 ======-->
-
+          </div></div></div></div></div>
   <script>
     var map = L.map("map").setView([26.6458, 88.1433], 12); // Kakarvitta, Jhapa
-  
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
-  
     L.marker([26.6458, 88.1433])
       .addTo(map)
       .bindPopup("Kakarvitta, Jhapa")
       .openPopup();
   </script>
-
-
-  <!--====== Section 3 ======-->
   <div class="u-s-p-b-60">
-    <!--====== Section Content ======-->
     <div class="section__content">
       <div class="container">
         <div class="row">
@@ -71,53 +45,30 @@
                 <div class="contact-o__icon">
                   <i class="fas fa-phone-volume"></i>
                 </div>
-
                 <span class="contact-o__info-text-1">LET'S HAVE A CALL</span>
-
                 <span class="contact-o__info-text-2">+977 9804994034</span>
-
                 <span class="contact-o__info-text-2">+977 9804994226</span>
-              </div>
-            </div>
-          </div>
+              </div></div></div>
           <div class="col-lg-4 col-md-6 u-s-m-b-30">
             <div class="contact-o u-h-100">
               <div class="contact-o__wrap">
                 <div class="contact-o__icon">
                   <i class="fas fa-map-marker-alt"></i>
                 </div>
-
                 <span class="contact-o__info-text-1">OUR LOCATION</span>
-
                 <span class="contact-o__info-text-2">Mechinagar, Jhapa</span>
-
                 <span class="contact-o__info-text-2">Koshi Province</span>
-              </div>
-            </div>
-          </div>
+              </div></div></div>
           <div class="col-lg-4 col-md-6 u-s-m-b-30">
             <div class="contact-o u-h-100">
               <div class="contact-o__wrap">
                 <div class="contact-o__icon"><i class="far fa-clock"></i></div>
-
                 <span class="contact-o__info-text-1">WORK TIME</span>
-
                 <span class="contact-o__info-text-2">5 Days a Week</span>
-
                 <span class="contact-o__info-text-2">From 9 AM to 7 PM</span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--====== End - Section Content ======-->
-  </div>
-  <!--====== End - Section 3 ======-->
-
-  <!--====== Section 4 ======-->
+            </div></div></div></div></div></div>
   <div class="u-s-p-b-60">
-    <!--====== Section Content ======-->
     <div class="section__content">
       <div class="container">
         <div class="row">
@@ -149,11 +100,8 @@
                         <button class="btn btn--e-brand-b-2" type="submit">
                             Send Message
                         </button>
-                    </div>
-                </div>
+                    </div></div>
             </form>
-            
-            <!-- Display error messages if any -->
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
@@ -161,24 +109,10 @@
                     </div>
                 {% endfor %}
             {% endif %}
-            
-            
-            <!-- Display success message -->
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-success">{{ message }}</div>
                 {% endfor %}
             {% endif %}
-            
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--====== End - Section Content ======-->
-  </div>
-  <!--====== End - Section 4 ======-->
-</div>
-<!--====== End - App Content ======-->
-
+            </div></div></div></div></div></div></div>
 {% endblock container %}

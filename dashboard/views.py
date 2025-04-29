@@ -13,35 +13,21 @@ from django.db.models.functions import TruncDate
 from django.db.models import Count, Sum, F, ExpressionWrapper, fields
 import json
 
-# Create your views here.
 @check_blacklisted
 @login_required
 def vendor_dashboard(request):
-    # Ensure the user is a vendor
     if not request.user.is_authenticated or request.user.role != 'vendor':
         return render(request, 'dashboard/access_denied.html')
-
-    # Get the vendor's products
     vendor_products = Product.objects.filter(vendor=request.user)
-
-    # Total Products
     total_products = vendor_products.count()
-
-    # Auction Products
     auction_products = vendor_products.filter(product_type='auction').count()
-
-    # Total Revenue
     total_revenue = (
         Order.objects
         .filter(product__in=vendor_products)
         .aggregate(total_revenue=Sum('total_price'))
         .get('total_revenue', 0) or 0
     )
-
-    # Total Sales
     total_sales = Order.objects.filter(product__in=vendor_products).count()
-
-    # Sales Trends: Total sales per day for the last 7 days
     sales_trends = (
         Order.objects
         .filter(product__in=vendor_products, created_at__gte=timezone.now() - timedelta(days=7))
@@ -50,47 +36,36 @@ def vendor_dashboard(request):
         .annotate(total_sales=Sum('total_price'))
         .order_by('date')
     )
-
-    # Convert sales_trends to a JSON-serializable format
     sales_trends_data = [
         {
-            'date': trend['date'].strftime("%Y-%m-%d"),  # Convert date to string
-            'total_sales': float(trend['total_sales'])   # Ensure Decimal is converted to float
+            'date': trend['date'].strftime("%Y-%m-%d"),  
+            'total_sales': float(trend['total_sales']) 
         }
         for trend in sales_trends
     ]
-
-    # Auction Performance: Total bids per product
     auction_performance = (
         Auction.objects
         .filter(product__in=vendor_products)
         .annotate(total_bids=Count('bids'))
         .values('product__name', 'total_bids')
     )
-
-    # Convert auction_performance to a JSON-serializable format
     auction_performance_data = list(auction_performance)
-
-    # Active Buyers: Users who placed the most orders
     active_buyers = (
         Order.objects
         .filter(product__in=vendor_products)
         .values('user__email')
         .annotate(total_orders=Count('id'))
-        .order_by('-total_orders')[:10]  # Top 10 active buyers
+        .order_by('-total_orders')[:10]  
     )
-
-    # Convert active_buyers to a JSON-serializable format
     active_buyers_data = list(active_buyers)
-
     context = {
         "total_products": total_products,
         "auction_products": auction_products,
         "total_revenue": total_revenue,
         "total_sales": total_sales,
-        "sales_trends": json.dumps(sales_trends_data),  # Use the serializable data
-        "auction_performance": json.dumps(auction_performance_data),  # Use the serializable data
-        "active_buyers": json.dumps(active_buyers_data),  # Use the serializable data
+        "sales_trends": json.dumps(sales_trends_data),  
+        "auction_performance": json.dumps(auction_performance_data),  
+        "active_buyers": json.dumps(active_buyers_data),  
     }
     return render(request, 'dashboard/home.html', context)
 

@@ -18,16 +18,14 @@
         <div class="card-body">
             <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
-                
-                <!-- Basic Information Section -->
                 <div class="row g-3">
                     <div class="col-md-8">
                         <div class="form-group">
                             <label for="id_name" class="form-label">Product Name<span class="text-danger">*</span></label>
                             <input type="text" name="name" id="id_name" 
-                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}"
-                                   value="{{ form.name.value|default:'' }}"
-                                   placeholder="Enter product name" required>
+                                class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                value="{{ form.name.value|default:'' }}"
+                                placeholder="Enter product name" required>
                             {% for error in form.name.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
@@ -47,8 +45,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Pricing & Stock Section -->
                 <div class="row g-3 mt-2">
                     <div class="col-md-3">
                         <div class="form-group">
@@ -65,7 +61,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="id_discount" class="form-label">Discount</label>
@@ -81,7 +76,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="id_stock" class="form-label">Stock<span class="text-danger">*</span></label>
@@ -94,7 +88,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="id_size" class="form-label">Size/Dimensions</label>
@@ -108,8 +101,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Descriptions Section -->
                 <div class="row g-3 mt-2">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -122,7 +113,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="id_additional_information" class="form-label">Additional Info</label>
@@ -134,7 +124,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="id_features" class="form-label">Key Features</label>
@@ -148,11 +137,8 @@
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
                         </div>
-                        
                     </div>
                 </div>
-
-                <!-- Category & Brand Section -->
                 <div class="row g-3 mt-2">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -168,8 +154,6 @@
                             {% endfor %}
                         </div>
                     </div>
-                    
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="id_brand" class="form-label">Brand</label>
@@ -184,7 +168,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="id_product_type" class="form-label">Product Type</label>
@@ -201,8 +184,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Image & Availability -->
                 <div class="row g-3 mt-3">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -216,45 +197,41 @@
                         </div>
                     </div>
                 </div>
-
-
                 {% if product_type == 'auction' %}
             <div class="row g-3 mt-2">
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="id_start_time" class="form-label">Start Time<span class="text-danger">*</span></label>
                         <input type="datetime-local" name="start_time" id="id_start_time" 
-                               class="form-control {% if form.start_time.errors %}is-invalid{% endif %}"
-                               value="{{ form.start_time.value|default:'' }}"
-                               required>
+                            class="form-control {% if form.start_time.errors %}is-invalid{% endif %}"
+                            value="{{ form.start_time.value|default:'' }}"
+                            required>
                         {% for error in form.start_time.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                 </div>
-
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="id_end_time" class="form-label">End Time<span class="text-danger">*</span></label>
                         <input type="datetime-local" name="end_time" id="id_end_time" 
-                               class="form-control {% if form.end_time.errors %}is-invalid{% endif %}"
-                               value="{{ form.end_time.value|default:'' }}"
-                               required>
+                            class="form-control {% if form.end_time.errors %}is-invalid{% endif %}"
+                            value="{{ form.end_time.value|default:'' }}"
+                            required>
                         {% for error in form.end_time.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                 </div>
-
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="id_starting_bid" class="form-label">Starting Bid<span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text">Rs </span>
                             <input type="number" name="starting_bid" id="id_starting_bid" 
-                                   class="form-control {% if form.starting_bid.errors %}is-invalid{% endif %}"
-                                   value="{{ form.starting_bid.value|default:'0.00' }}"
-                                   step="0.01" min="0" required>
+                                class="form-control {% if form.starting_bid.errors %}is-invalid{% endif %}"
+                                value="{{ form.starting_bid.value|default:'0.00' }}"
+                                step="0.01" min="0" required>
                         </div>
                         {% for error in form.starting_bid.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
@@ -263,9 +240,6 @@
                 </div>
             </div>
             {% endif %}
-
-            
-                <!-- Form Actions -->
                 <div class="d-flex justify-content-between mt-4 border-top pt-3">
                     <button type="submit" class="btn btn-primary px-4">
                         <i class="data-feather" data-feather="save"></i> Save Product
@@ -278,7 +252,6 @@
         </div>
     </div>
 </div>
-
 <style>
     .form-label {
         font-weight: 500;
@@ -295,14 +268,10 @@
         background-color: #f8f9fa;
     }
 </style>
-
 <script>
-    // Initialize Feather Icons
     document.addEventListener('DOMContentLoaded', function() {
         feather.replace();
     });
-
-    // Image Preview Functionality
     document.getElementById('id_image').addEventListener('change', function(e) {
         const reader = new FileReader();
         reader.onload = function() {

@@ -10,12 +10,9 @@
     <link href="{% static 'dashboard/assets/css/bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'dashboard/assets/css/main.css' %}" rel="stylesheet">
 </head>
-
 <body class="d-flex flex-column h-100">
     <div id="page">
-
         <div class="wrapper">
-
             <nav id="sidebar" class="active">
                 <div class="sidebar-header text-center">
                     <a href="{% url 'dashboard:vendor_dashboard' %}">
@@ -23,7 +20,6 @@
                         <h4 class="sidebar-title theme-item">RAMSA BAJAR</h4>
                     </a>
                 </div>
-            
                 <ul class="list-unstyled components text-secondary">
                     <li><a href="{% url 'dashboard:vendor_dashboard' %}"><i class="data-feather theme-item" data-feather="home"></i> <span
                                 class="theme-item"> Dashboard</span></a></li>
@@ -33,7 +29,6 @@
                                             onclick="myFunction()"><i class="data-feather theme-item" data-feather="box"></i> <span
                                                 class="theme-item"> Product</span><i class="sidenaviconopen float-end"
                                                 id="sidenavicon" data-feather="chevron-up"></i></a>
-                        
                                         <div class="dropdown-container">
                                             <a href="{% url 'dashboard:vendor_products' %}?type=selling" class="text-center {% if product_type == 'selling' %}active{% endif %}"><i class="data-feather theme-item"
                                                     data-feather="dollar-sign"></i> <span class="data-feather theme-item">Selling</span></a> 
@@ -49,13 +44,11 @@
                     <li><a href="{% url 'dashboard:vendor_orders' %}"><i class="data-feather theme-item" data-feather="shopping-cart"></i> <span
                                 class="theme-item"> Order</span></a></li>
                 </ul>
-            
                 <div class="text-center mt-5 mb-5">
                     <a href="#" class="theme-btn" onClick="removeCookieSidebar()">Reset</a>
                 </div>
             </nav>
             <div id="bodywrapper" class="container-fluid showhidetoggle">
-
                 <nav class="navbar navbar-expand-md navbar-white bg-white py-0" aria-label="navbarexample" id="navbar">
                     <div class="container-fluid">
                         <button type="button" id="sidebarCollapse" class="btn btn-light py-0">
@@ -68,18 +61,15 @@
                             aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"><i data-feather="menu"></i></span>
                         </button>
-            
                         <div class="collapse navbar-collapse mx-1" id="navbarsExample04">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            
                                 <li class="nav-item">
                                     <div class="nav-dropdown">
                                         <a class="nav-item nav-link active text-secondary py-0" aria-current="page"
-                                         href="{% url 'dashboard:vendor_dashboard' %}"><i class="data-feather theme-item"
+                                        href="{% url 'dashboard:vendor_dashboard' %}"><i class="data-feather theme-item"
                                                 data-feather="home"></i> <span class="theme-item">Home </span></a>
                                     </div>
                                 </li>
-
                                 <li class="nav-item">
                                     <div class="nav-dropdown">
                                         <a class="nav-item nav-link text-secondary py-0" href="{% url 'shop:home' %}">
@@ -88,7 +78,6 @@
                                         </a>
                                     </div>
                                 </li>
-
                             </ul>
                             <div id="navSearchForm" class="mx-1">
                                 <form action="#" class="search-form py-0">
@@ -98,15 +87,12 @@
                                     </button>
                                 </form>
                             </div>
-            
-            
-                            <div class="usermenu">
+            <div class="usermenu">
                                 <div class="nav-dropdown py-0">
                                     <a href="#" class="nav-item nav-link dropdown-toggle text-secondary py-0"
                                         id="navbarDropdown3" role="button" data-bs-toggle="dropdown"
                                         aria-expanded="false"> <img class="theme-item user-avatar"
                                             src="{% static 'dashboard/assets/img/earth.svg' %} " alt="User image"> <!--<i class="theme-item" -->
-                                        <!--data-feather="user"></i> --> <span class="theme-item">{{ request.user.full_name }}</span><i class="theme-item" data-feather="chevron-down"></i></a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown3">
                                         <li> <a href="{% url 'dashboard:vendor-profile' %}" class="dropdown-item mt-2"><i class="data-feather"
                                                     data-feather="user"></i> Profile</a></li>
@@ -120,15 +106,12 @@
                                     </ul>
                                 </div>
                             </div>
-            
                         </div>
                     </div>
                 </nav>
-            
                 <div class="settings">
                     <div class="modal fade" id="settingsModal" aria-labelledby="settingsModalTitle" aria-hidden="true"
                         tabindex="-1">
-                        <!-- 				 data-bs-backdrop="static" data-bs-keyboard="false" -->
                         <div class="modal-dialog modal-dialog-settings">
                             <div class="modal-content">
                                 <div class="modal-header text-center">
@@ -137,11 +120,8 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-            
                                     <section id="logincontent" class="shiftdown">
-            
                                         <div class="row g-3 mb-3 mt-3">
-            
                                             <div class="col-md-6">
                                                 <h6 class="text-muted">Select Color</h6>
                                                 <span onclick="changeColor('0')"
@@ -178,10 +158,8 @@
                                                     <button onclick="removeViewSizeCookie()">Reset to
                                                         Default</button>
                                                 </div>
-            
                                             </div>
                                         </div>
-            
                                         <hr />
                                         <button class="btn btn-sm btn-danger" data-bs-dismiss="modal" type="button">
                                             <i data-feather="check-circle" class="mr-1"></i> Ok
@@ -192,7 +170,6 @@
                         </div>
                     </div>
                 </div>
-            
                 <div id="sidebarOverlayNav" class="screen-overlay float-end">
                     <a href="javascript:void(0)" class="closebtn" onclick="closeOverlayNav()">&times;</a>
                     <div class="screen-overlay-content text-secondary">
@@ -200,20 +177,11 @@
                             href="#">Contact</a>
                     </div>
                 </div>
-            
-            
-        
             {% block container %}
-        
-
-
-
             {% endblock container %}
-
         </div>
     </div>
     <div id="loading" class="spinner-border text-primary align-middle" role="status"></div>
-
     <button class="btn btn-sm btn-primary rounded-circle" onclick="scrollToTopFunction()" id="scrollToTop"
         title="Scroll to top">
         <i data-feather="arrow-up-circle"></i>
@@ -222,7 +190,6 @@
     <script src="{% static 'dashboard/assets/js/bootstrap.bundle.min.js' %} "></script>
     <script src="{% static 'dashboard/assets/js/Chart.min.js' %} "></script>
     <script src="{% static 'dashboard/assets/js/script.js' %} "></script>
-
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function (event) {
             feather.replace();
@@ -231,7 +198,6 @@
     <script type="text/javascript">
         var trafficchart = document.getElementById("trafficflow");
         var saleschart = document.getElementById("sales");
-
         var myChart1 = new Chart(trafficchart, {
             type: 'line',
             data: {
@@ -282,7 +248,6 @@
                 }
             }
         });
-
         var myChart2 = new Chart(saleschart, {
             type: 'bar',
             data: {
@@ -342,7 +307,6 @@
             pdfExport.fromHTML(htmlTableContent);
             pdfExport.save('tableData.pdf');
         };
-
         var element = document.getElementById("exportToPDF1");
         element.addEventListener("click", onClick);
     </script>
@@ -355,12 +319,10 @@
                 var cellLength = oCells.length;
                 for (var j = 0; j < cellLength; j++) {
                     var cellVal = oCells.item(j).innerHTML;
-                    //alert(cellVal);
                 }
             }
         }
     </script>
-
     <script type="text/javascript">
         document.getElementById('finTable').addEventListener('click',
             function (item) {
@@ -370,12 +332,9 @@
                     row_value += row.cells[j].innerHTML;
                     row_value += " | ";
                 }
-
-                //alert(row_value);
                 var pdfExport = new jsPDF('p', 'pt', 'a4');
                 pdfExport.fromHTML(row_value);
                 pdfExport.save(row_value.split('|')[0].trim() + '.pdf');
-
                 if (row.classList.contains('highlight'))
                     row.classList.remove('highlight');
                 else
